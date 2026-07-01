@@ -1,29 +1,34 @@
 {
-  "name": "mlnpm",
-  "version": "1.0.0",
-  "description": "",
-  "private": true,
-  "scripts": {
-    "dev:api": "npm run dev -w @mlnpm/registry-api",
-    "dev:web": "npm run dev -w @mlnpm/web",
-    "migrate": "npm run migrate -w @mlnpm/registry-api",
-    "build:api": "npm run build -w @mlnpm/registry-api"
-  },
-  "workspaces": [
-    "app/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/neeldesai1085/mlnpm.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/neeldesai1085/mlnpm/issues"
-  },
-  "homepage": "https://github.com/neeldesai1085/mlnpm#readme",
-  "engines": {
-    "node": ">=18.0.0"
-  }
+    "name": "mlnexus",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "scripts": {
+        "dev:backend": "npm run dev -w @mlnexus/backend",
+        "dev:frontend": "npm run dev -w @mlnexus/frontend",
+        "dev:runtime": "npm run dev -w @mlnexus/runtime",
+        "migrate": "npm run migrate -w @mlnexus/backend",
+        "build:backend": "npm run build -w @mlnexus/backend",
+        "build:frontend": "npm run build -w @mlnexus/frontend",
+        "build:runtime": "npm run build -w @mlnexus/runtime",
+        "build:cli": "npm run build -w @mlnexus/cli",
+        "build": "npm run build --workspaces --if-present"
+    },
+    "workspaces": [
+        "app/*"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ishikachhajed/mlnexus.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ishikachhajed/mlnexus/issues"
+    },
+    "homepage": "https://github.com/ishikachhajed/mlnexus#readme",
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }
