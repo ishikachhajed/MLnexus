@@ -30,5 +30,8 @@
     "homepage": "https://github.com/ishikachhajed/mlnexus#readme",
     "engines": {
         "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "zod": "^4.4.3"
     }
 }
