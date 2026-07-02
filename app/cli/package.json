@@ -9,6 +9,6 @@
   "license": "ISC",
   "type": "module",
   "bin": {
-    "mlnpm": "./dist/index.js"
+    "mlnexus": "./dist/index.js"
   }
 }
