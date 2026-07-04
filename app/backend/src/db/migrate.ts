@@ -11,13 +11,12 @@ const MIGRATIONS_DIR = path.join(__dirname, "migrations");
 async function ensureMigrationsTable() {
     await query(`
         CREATE TABLE IF NOT EXISTS _migrations (
-        id         SERIAL PRIMARY KEY,
-        name       VARCHAR(255) NOT NULL UNIQUE,
-        applied_at TIMESTAMPTZ  NOT NULL DEFAULT now()
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL UNIQUE,
+            applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
         );
     `);
 }
-
 
 async function getAppliedMigrations(): Promise<Set<string>> {
     const { rows } = await query<{ name: string }>(
@@ -49,12 +48,12 @@ async function migrate() {
             await client.query("COMMIT");
             console.log(`✅ ${file}`);
             ranCount++;
-        } 
+        }
         catch (err) {
             await client.query("ROLLBACK");
             console.error(`❌ ${file} — rolled back`);
             throw err;
-        } 
+        }
         finally {
             client.release();
         }
