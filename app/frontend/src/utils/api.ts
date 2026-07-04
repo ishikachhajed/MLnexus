@@ -20,8 +20,8 @@ export function getUser(): User | null {
 }
 
 export function clearAuth() {
-  localStorage.removeItem("mlnpm_token");
-  localStorage.removeItem("mlnpm_user");
+  localStorage.removeItem("mlnexus_token");
+  localStorage.removeItem("mlnexus_user");
 }
 
 export async function api(path: string, options: RequestInit = {}) {
