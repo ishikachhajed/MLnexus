@@ -1,5 +1,5 @@
 {
-  "name": "@mlnexus/registry-api",
+  "name": "@mlnexus/backend",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
