@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { BrowserRouter, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { getUser, clearAuth } from "./utils/api";
 import type { User } from "./utils/api";
 import Navbar from "./components/Navbar";
+import Landing from "./pages/Landing";
 
 export default function App() {
   const [user, setUser] = useState<User | null>(getUser());
@@ -16,6 +17,7 @@ export default function App() {
     <BrowserRouter>
       <Navbar user={user} onLogout={handleLogout} />
       <Routes>
+        <Route path="/" element={<Landing />} />
       </Routes>
     </BrowserRouter>
   )
