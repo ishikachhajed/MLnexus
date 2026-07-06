@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, setAuth } from "../utils/api";
 
@@ -10,6 +10,7 @@ function Register({ onLogin }: { onLogin: () => void }) {
     const [otpSent, setOtpSent] = useState(false);
     const [notice, setNotice] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [resendCooldown, setResendCooldown] = useState(0);
     const [error, setError] = useState<string | null>(null);
     
     const navigate = useNavigate();
@@ -20,6 +21,41 @@ function Register({ onLogin }: { onLogin: () => void }) {
         { label: "One number", valid: /[0-9]/.test(password) },
         { label: "One special character", valid: /[^A-Za-z0-9]/.test(password) }
     ];
+
+    useEffect(() => {
+        if (!otpSent || resendCooldown <= 0) {
+            return;
+        }
+
+        const timer = window.setInterval(() => {
+            setResendCooldown((current) => (current <= 1 ? 0 : current - 1));
+        }, 1000);
+
+        return () => window.clearInterval(timer);
+    }, [otpSent, resendCooldown]);
+
+    const handleResendOtp = async () => {
+        if (isSubmitting || resendCooldown > 0) {
+            return;
+        }
+
+        setError(null);
+        setNotice(null);
+
+        try {
+            setIsSubmitting(true);
+            await api("/auth/resend-otp", {
+                method: "POST",
+                body: JSON.stringify({ email }),
+            });
+            setNotice("New OTP sent to your email.");
+            setResendCooldown(30);
+        } catch (err: unknown) {
+            setError((err as Error).message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -56,6 +92,7 @@ function Register({ onLogin }: { onLogin: () => void }) {
                 });
                 setOtpSent(true);
                 setNotice("OTP sent to your email.");
+                setResendCooldown(30);
             } else {
                 const data = await api("/auth/verify-otp", {
                     method: "POST",
@@ -66,8 +103,8 @@ function Register({ onLogin }: { onLogin: () => void }) {
                 navigate("/explore");
             }
         } 
-        catch (err: any) {
-            setError(err.message);
+        catch (err: unknown) {
+            setError((err as Error).message);
         }
         finally {
             setIsSubmitting(false);
@@ -152,6 +189,21 @@ function Register({ onLogin }: { onLogin: () => void }) {
                             placeholder="Enter the 6-digit code"
                             required
                         />
+                        <div className="mt-3 flex items-center justify-between text-xs">
+                            <span className="text-slate-400">
+                                {resendCooldown > 0
+                                    ? `Resend available in ${resendCooldown}s`
+                                    : "Didn't get a code?"}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={handleResendOtp}
+                                disabled={resendCooldown > 0 || isSubmitting}
+                                className="text-pink-500 hover:text-pink-400 font-medium cursor-pointer disabled:text-slate-500 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Resend OTP
+                            </button>
+                        </div>
                     </div>
                 )}
                 
