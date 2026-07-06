@@ -7,6 +7,7 @@ import Landing from "./pages/Landing";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
+import Explore from "./pages/Explore";
 
 export default function App() {
   const [user, setUser] = useState<User | null>(getUser());
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/register" element={<Register onLogin={handleLogin} />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/forgot" element={<ForgotPassword />} />
+        <Route path="/explore" element={<Explore />} />
       </Routes>
     </BrowserRouter>
   )
