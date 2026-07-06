@@ -6,6 +6,10 @@ function Register({ onLogin }: { onLogin: () => void }) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [otp, setOtp] = useState("");
+    const [otpSent, setOtpSent] = useState(false);
+    const [notice, setNotice] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
     const navigate = useNavigate();
@@ -19,31 +23,54 @@ function Register({ onLogin }: { onLogin: () => void }) {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (isSubmitting) return;
+
         setError(null);
+        setNotice(null);
 
-        if (!/^[a-z0-9_-]+$/.test(username)) {
-            return setError("Username can only contain lowercase letters, numbers, underscores, and dashes.");
-        }
+        if (!otpSent) {
+            if (!/^[a-z0-9_-]+$/.test(username)) {
+                return setError("Username can only contain lowercase letters, numbers, underscores, and dashes.");
+            }
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return setError("Please enter a valid email address.");
-        }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                return setError("Please enter a valid email address.");
+            }
 
-        if (!pwdRules.every(rule => rule.valid)) {
-            return setError("Please ensure all password requirements are met.");
+            if (!pwdRules.every(rule => rule.valid)) {
+                return setError("Please ensure all password requirements are met.");
+            }
+        } else {
+            if (!otp.trim()) {
+                return setError("Please enter the OTP sent to your email.");
+            }
         }
 
         try {
-            const data = await api("/auth/register", {
-                method: "POST",
-                body: JSON.stringify({ username, email, password })
-            });
-            setAuth(data.token, data.user);
-            onLogin();
-            navigate("/explore");
+            setIsSubmitting(true);
+
+            if (!otpSent) {
+                await api("/auth/register", {
+                    method: "POST",
+                    body: JSON.stringify({ username, email, password })
+                });
+                setOtpSent(true);
+                setNotice("OTP sent to your email.");
+            } else {
+                const data = await api("/auth/verify-otp", {
+                    method: "POST",
+                    body: JSON.stringify({ email, otp })
+                });
+                setAuth(data.token, data.user);
+                onLogin();
+                navigate("/explore");
+            }
         } 
         catch (err: any) {
             setError(err.message);
+        }
+        finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -52,6 +79,11 @@ function Register({ onLogin }: { onLogin: () => void }) {
             <div className="bg-black/50 border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
                 <h2 className="text-2xl font-bold text-white text-center mb-8">Create Account</h2>
                 
+                {notice && (
+                    <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-sm">
+                        {notice}
+                    </div>
+                )}
                 {error && (
                 <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm">
                     {error}
@@ -65,7 +97,8 @@ function Register({ onLogin }: { onLogin: () => void }) {
                     type="text" 
                     value={username} 
                     onChange={e => setUsername(e.target.value)} 
-                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors"
+                    disabled={otpSent}
+                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="e.g. johndoe"
                     required 
                     />
@@ -76,7 +109,8 @@ function Register({ onLogin }: { onLogin: () => void }) {
                     type="email" 
                     value={email} 
                     onChange={e => setEmail(e.target.value)} 
-                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors"
+                    disabled={otpSent}
+                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="you@example.com"
                     required 
                     />
@@ -87,7 +121,8 @@ function Register({ onLogin }: { onLogin: () => void }) {
                     type="password" 
                     value={password} 
                     onChange={e => setPassword(e.target.value)} 
-                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors"
+                    disabled={otpSent}
+                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Min 8 characters"
                     required 
                     />
@@ -106,11 +141,26 @@ function Register({ onLogin }: { onLogin: () => void }) {
                     </div>
                 </div>
                 
+                {otpSent && (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-400 mb-1.5">OTP</label>
+                        <input
+                            type="text"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors"
+                            placeholder="Enter the 6-digit code"
+                            required
+                        />
+                    </div>
+                )}
+                
                 <button 
                     type="submit" 
-                    className="w-full py-3 px-4 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded-lg shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all mt-6"
+                    disabled={isSubmitting}
+                    className="w-full py-3 px-4 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded-lg shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    Register
+                    {otpSent ? "Verify OTP and Register" : "Get OTP"}
                 </button>
                 </form>
                 
