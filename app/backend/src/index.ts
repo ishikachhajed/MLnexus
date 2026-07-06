@@ -33,6 +33,7 @@ const OTP_CLEANUP_INTERVAL_MS = 15 * 60 * 1000;
 setInterval(async () => {
     try {
         await pool.query("DELETE FROM otp_requests WHERE expires_at < now()");
+        await pool.query("DELETE FROM password_reset_requests WHERE expires_at < now()");
     } catch (err) {
         console.error("Failed to cleanup expired OTP entries:", err);
     }

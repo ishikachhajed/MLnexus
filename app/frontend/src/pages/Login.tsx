@@ -64,7 +64,14 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                             required
                         />
                     </div>
-
+                    <div className="text-center">
+                        <Link
+                            to="/forgot"
+                            className="text-sm text-pink-400 hover:text-pink-300"
+                        >
+                            Forgot username or password?
+                        </Link>
+                    </div>
                     <button
                         type="submit"
                         className="w-full py-3 px-4 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded-lg shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all mt-6"
