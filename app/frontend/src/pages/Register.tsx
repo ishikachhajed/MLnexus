@@ -128,45 +128,61 @@ function Register({ onLogin }: { onLogin: () => void }) {
                 )}
                 
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-                <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Username</label>
+                <div className={otpSent ? "opacity-70" : ""}>
+                    <label className={`block text-sm font-medium mb-1.5 ${otpSent ? "text-slate-500" : "text-slate-400"}`}>Username</label>
                     <input 
                     type="text" 
                     value={username} 
                     onChange={e => setUsername(e.target.value)} 
                     disabled={otpSent}
-                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white transition-colors disabled:cursor-not-allowed ${
+                        otpSent 
+                            ? "text-slate-500 placeholder:text-slate-600 border-white/10" 
+                            : "focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                    }`}
                     placeholder="e.g. johndoe"
                     required 
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Email</label>
+                <div className={otpSent ? "opacity-70" : ""}>
+                    <label className={`block text-sm font-medium mb-1.5 ${otpSent ? "text-slate-500" : "text-slate-400"}`}>Email</label>
                     <input 
                     type="email" 
                     value={email} 
                     onChange={e => setEmail(e.target.value)} 
                     disabled={otpSent}
-                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white transition-colors disabled:cursor-not-allowed ${
+                        otpSent 
+                            ? "text-slate-500 placeholder:text-slate-600 border-white/10" 
+                            : "focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                    }`}
                     placeholder="you@example.com"
                     required 
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Password</label>
+                <div className={otpSent ? "opacity-70" : ""}>
+                    <label className={`block text-sm font-medium mb-1.5 ${otpSent ? "text-slate-500" : "text-slate-400"}`}>Password</label>
                     <input 
                     type="password" 
                     value={password} 
                     onChange={e => setPassword(e.target.value)} 
                     disabled={otpSent}
-                    className="w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`w-full px-4 py-2.5 bg-black border border-white/20 rounded-lg text-white transition-colors disabled:cursor-not-allowed ${
+                        otpSent 
+                            ? "text-slate-500 placeholder:text-slate-600 border-white/10" 
+                            : "focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                    }`}
                     placeholder="Min 8 characters"
                     required 
                     />
                     
-                    <div className="mt-3 space-y-1.5 text-xs font-medium">
+                    <div className={`mt-3 space-y-1.5 text-xs font-medium ${otpSent ? "text-slate-500" : ""}`}>
                         {pwdRules.map((rule, idx) => (
-                            <div key={idx} className={`flex items-center gap-2 transition-colors duration-300 ${rule.valid ? 'text-green-500' : 'text-red-500'}`}>
+                            <div key={idx} className={`flex items-center gap-2 transition-colors duration-300 ${
+                                otpSent 
+                                    ? "text-slate-500" 
+                                    : rule.valid ? "text-green-500" : "text-red-500"
+                            }`}>
                                 {rule.valid ? (
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
                                 ) : (
