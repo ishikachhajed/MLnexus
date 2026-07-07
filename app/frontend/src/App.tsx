@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import Explore from "./pages/Explore";
+import Package from "./pages/Package";
 
 export default function App() {
   const [user, setUser] = useState<User | null>(getUser());
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/explore" element={<Explore />} />
+        <Route path="/packages/:name" element={<Package />} />
       </Routes>
     </BrowserRouter>
   )

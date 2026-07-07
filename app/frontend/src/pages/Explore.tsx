@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../utils/api";
 import CustomToast from "../components/CustomToast";
 import { useToastState } from "../hooks/useToastState";
@@ -99,10 +100,10 @@ export default function Explore() {
 
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Array.from({ length: 6 }).map((_, index) => (
+                    {Array.from({ length: 6 }).map((_, i) => (
                         <div
-                            key={index}
-                            className="h-40 rounded-2xl border border-white/10 bg-black/50 animate-pulse backdrop-blur-sm"
+                            key={i}
+                            className="rounded-2xl border border-white/5 bg-black/50 p-5 shadow-[0_0_20px_rgba(236,72,153,0.05)] animate-pulse"
                         />
                     ))}
                 </div>
@@ -111,9 +112,11 @@ export default function Explore() {
             {!loading && hasResults ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {packages.map((pkg) => (
-                        <div
+                        <Link
                             key={pkg.id}
-                            className="rounded-2xl border border-white/10 bg-black/50 p-5 shadow-[0_0_20px_rgba(15,23,42,0.25)] backdrop-blur-sm transition-transform hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(236,72,153,0.15)]"
+                            to={`/packages/${pkg.name}`}
+                            className="rounded-2xl border border-white/10 bg-black/50 p-5 shadow-[0_0_20px_rgba(236,72,153,0.05)] transition-all hover:-translate-y-0.5 hover:border-pink-500/50 hover:bg-black/80 hover:shadow-[0_0_30px_rgba(236,72,153,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 block"
+                            aria-label={`Open ${pkg.name} package`}
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <h2 className="text-lg font-semibold text-white">
@@ -136,7 +139,7 @@ export default function Explore() {
                                     ).toLocaleDateString()}
                                 </span>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             ) : null}

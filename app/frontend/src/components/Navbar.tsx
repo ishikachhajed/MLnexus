@@ -90,9 +90,9 @@ function Navbar({
                         }}
                     >
                         {menuOpen ? (
-                            <X className="h-5 w-5 text-pink-400" />
+                            <X className="h-5 w-5 text-white" />
                         ) : (
-                            <Menu className="h-5 w-5 text-pink-400" />
+                            <Menu className="h-5 w-5 text-white" />
                         )}
                     </button>
                 </div>
