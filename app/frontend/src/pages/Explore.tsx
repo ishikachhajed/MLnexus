@@ -171,7 +171,7 @@ export default function Explore() {
                                 });
                             }
                         }}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-black border border-white/20 rounded-xl font-mono text-pink-400 hover:border-pink-400/60 transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-black border border-white/20 rounded-xl font-mono text-pink-400 hover:border-pink-400/60 transition-colors cursor-pointer"
                         aria-label="Copy publish command"
                     >
                         <span className="text-slate-500">$</span> {publishCommand}

@@ -38,7 +38,7 @@ export default function Landing() {
             <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-2 px-6 py-4 mb-10 bg-black border border-white/20 rounded-xl font-mono text-pink-400 shadow-inner hover:border-pink-400/60 hover:text-pink-300 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-4 mb-10 bg-black border border-white/20 rounded-xl font-mono text-pink-400 shadow-inner hover:border-pink-400/60 hover:text-pink-300 transition-colors cursor-pointer"
                 aria-label="Copy install command"
             >
                 <span className="text-slate-500">$</span> {command}
