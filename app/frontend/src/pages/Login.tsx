@@ -1,17 +1,18 @@
 import { useState } from "react";
+import CustomToast from "../components/CustomToast";
+import { useToastState } from "../hooks/useToastState";
 import { Link, useNavigate } from "react-router-dom";
 import { api, setAuth } from "../utils/api";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
+    const { toast, showToast, setOpen } = useToastState();
 
     const navigate = useNavigate();
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
         
         try {
             const data = await api("/auth/login", {
@@ -22,24 +23,22 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             onLogin();
             navigate("/explore");
         } catch (err: unknown) {
-            setError((err as Error).message);
+            showToast({
+                title: "Login failed",
+                message: (err as Error).message,
+                variant: "error",
+            });
         }
     };
     
     return (
         <div className="max-w-md w-full mx-auto mt-16 px-6">
-            <div className="bg-black/50 border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
-                <h2 className="text-2xl font-bold text-white text-center mb-8">
+            <div className="bg-black border border-white/10 rounded-2xl p-8 shadow-[0_0_40px_rgba(236,72,153,0.1)]">
+                <h2 className="text-3xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-rose-400">
                     Welcome Back
                 </h2>
 
-                {error && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-400 mb-1.5">
                             Username
@@ -78,18 +77,18 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                     >
                         Login
                     </button>
+                    <div className="text-center text-slate-400 text-sm mt-8">
+                        Don't have an account?{" "}
+                        <Link
+                            to="/register"
+                            className="text-pink-400 hover:text-pink-300 font-medium transition-colors"
+                        >
+                            Register
+                        </Link>
+                    </div>
                 </form>
-
-                <p className="text-center text-sm text-slate-400 mt-6">
-                    Don't have an account?{" "}
-                    <Link
-                        to="/register"
-                        className="text-pink-400 hover:text-pink-300"
-                    >
-                        Register
-                    </Link>
-                </p>
             </div>
+            <CustomToast toast={toast} onOpenChange={setOpen} />
         </div>
     );
 }

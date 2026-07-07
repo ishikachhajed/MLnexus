@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../utils/api";
+import CustomToast from "../components/CustomToast";
+import { useToastState } from "../hooks/useToastState";
 
 type PackageSummary = {
     id: string;
@@ -16,6 +18,9 @@ export default function Explore() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    
+    const { toast, showToast, setOpen } = useToastState();
+    const publishCommand = "mlnexus publish my-model";
 
     const trimmedSearch = useMemo(() => search.trim(), [search]);
 
@@ -41,11 +46,13 @@ export default function Explore() {
                 if (!isActive) {
                     return;
                 }
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : "Failed to load packages",
-                );
+                const message = err instanceof Error ? err.message : "Failed to load packages";
+                setError(message);
+                showToast({
+                    title: "Explore failed",
+                    message,
+                    variant: "error",
+                });
                 setPackages([]);
             } finally {
                 if (isActive) {
@@ -58,7 +65,7 @@ export default function Explore() {
             isActive = false;
             clearTimeout(timer);
         };
-    }, [trimmedSearch]);
+    }, [trimmedSearch, showToast]);
 
     const hasResults = packages.length > 0;
     const showEmpty = !loading && !error && !hasResults;
@@ -88,11 +95,7 @@ export default function Explore() {
                 </div>
             </div>
 
-            {error ? (
-                <div className="mb-8 rounded-2xl border border-red-500/40 bg-red-500/10 px-6 py-4 text-red-200">
-                    {error}
-                </div>
-            ) : null}
+            {error ? null : null}
 
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -145,13 +148,37 @@ export default function Explore() {
                             ? "No packages match that search"
                             : "No packages published yet"}
                     </p>
-                    <p className="text-slate-500">
+                    <p className="text-slate-500 mb-6">
                         {trimmedSearch.length > 0
                             ? "Try another name or clear the search."
                             : "Be the first! Use the CLI to publish an ONNX model."}
                     </p>
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            try {
+                                await navigator.clipboard.writeText(publishCommand);
+                                showToast({
+                                    title: "Copied",
+                                    message: "Publish command copied to clipboard.",
+                                    variant: "success",
+                                });
+                            } catch {
+                                showToast({
+                                    title: "Copy failed",
+                                    message: "Please try again.",
+                                    variant: "error",
+                                });
+                            }
+                        }}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-black border border-white/20 rounded-xl font-mono text-pink-400 hover:border-pink-400/60 transition-colors"
+                        aria-label="Copy publish command"
+                    >
+                        <span className="text-slate-500">$</span> {publishCommand}
+                    </button>
                 </div>
             ) : null}
+            <CustomToast toast={toast} onOpenChange={setOpen} />
         </div>
     );
 }

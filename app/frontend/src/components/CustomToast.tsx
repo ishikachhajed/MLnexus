@@ -25,10 +25,10 @@ export default function CustomToast({ toast, onOpenChange }: CustomToastProps) {
                 <div
                     key={toast.progressKey}
                     className={`toast-progress h-full w-full ${toast.variant === "success"
-                            ? "bg-emerald-400"
-                            : toast.variant === "error"
-                                ? "bg-rose-400"
-                                : "bg-pink-400"
+                        ? "bg-emerald-400"
+                        : toast.variant === "error"
+                            ? "bg-rose-400"
+                            : "bg-pink-400"
                         }`}
                     style={{ animationDuration: `${toast.durationMs}ms` }}
                 />
