@@ -12,7 +12,7 @@ function Navbar({
 }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
-    
+
     const handleLogout = () => {
         onLogout();
         navigate("/");

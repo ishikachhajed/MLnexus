@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useParams } from "react-router-dom";
 import CustomToast from "../components/CustomToast";
 import { useToastState } from "../hooks/useToastState";
@@ -10,14 +13,97 @@ type PackageVersion = {
     onnx_file_size: number;
     created_at: string;
     is_yanked: boolean;
+    has_predict: boolean;
+    has_stream: boolean;
 };
 
 type PackageDetails = {
     name: string;
     description?: string;
+    documentation_md?: string;
     owner: string;
     created_at: string;
     versions: PackageVersion[];
+};
+
+const markdownComponents: Components = {
+    h1: ({ children }) => (
+        <h1 className="mt-5 mb-3 text-2xl font-bold text-white">{children}</h1>
+    ),
+    h2: ({ children }) => (
+        <h2 className="mt-5 mb-3 text-xl font-bold text-white">{children}</h2>
+    ),
+    h3: ({ children }) => (
+        <h3 className="mt-4 mb-2 text-lg font-semibold text-white">
+            {children}
+        </h3>
+    ),
+    h4: ({ children }) => (
+        <h4 className="mt-4 mb-2 text-base font-semibold text-white">
+            {children}
+        </h4>
+    ),
+    p: ({ children }) => (
+        <p className="my-2 text-sm text-slate-200">{children}</p>
+    ),
+    ul: ({ children }) => (
+        <ul className="my-2 list-disc pl-5 text-sm text-slate-200">
+            {children}
+        </ul>
+    ),
+    ol: ({ children }) => (
+        <ol className="my-2 list-decimal pl-5 text-sm text-slate-200">
+            {children}
+        </ol>
+    ),
+    code: ({ className, children, ...props }) => {
+        const isInline = !className;
+
+        return (
+            <code
+                className={
+                    isInline
+                        ? "rounded-md bg-slate-950/80 px-1.5 py-0.5 font-mono text-[0.85rem] text-slate-100"
+                        : "text-slate-100"
+                }
+                {...props}
+            >
+                {children}
+            </code>
+        );
+    },
+    pre: ({ children }) => (
+        <pre className="my-3 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-sm">
+            {children}
+        </pre>
+    ),
+    a: ({ children, href }) => (
+        <a className="text-pink-400 underline" href={href}>
+            {children}
+        </a>
+    ),
+    blockquote: ({ children }) => (
+        <blockquote className="my-3 border-l-2 border-pink-500 pl-3 text-sm text-slate-400">
+            {children}
+        </blockquote>
+    ),
+    table: ({ children }) => (
+        <div className="my-3 overflow-x-auto">
+            <table className="w-full border-collapse text-sm text-slate-200">
+                {children}
+            </table>
+        </div>
+    ),
+    th: ({ children }) => (
+        <th className="border border-slate-800 bg-slate-950/70 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
+            {children}
+        </th>
+    ),
+    td: ({ children }) => (
+        <td className="border border-slate-800 px-3 py-2 text-sm text-slate-200">
+            {children}
+        </td>
+    ),
 };
 
 function formatBytes(bytes: number) {
@@ -33,9 +119,7 @@ export default function Package() {
     const [pkg, setPkg] = useState<PackageDetails | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast, showToast, setOpen } = useToastState();
-    
-    // Command specific to this package
-    const publishCommand = `mlnexus install ${name}`;
+    const installCommand = useMemo(() => `mlnpm install ${name ?? ""}`, [name]);
 
     useEffect(() => {
         if (!name) {
@@ -59,7 +143,8 @@ export default function Package() {
                 if (!isActive) {
                     return;
                 }
-                const details = data.package as PackageDetails;
+                const payload = data as { package: PackageDetails };
+                const details = payload.package;
                 setPkg(details);
                 if (!details?.versions?.length) {
                     showToast({
@@ -95,9 +180,14 @@ export default function Package() {
         };
     }, [name, showToast]);
 
+    const latestVersion = useMemo(() => {
+        if (!pkg?.versions?.length) return null;
+        return pkg.versions[0];
+    }, [pkg]);
+
     if (loading && !pkg) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center px-6">
+            <div className="min-h-screen flex items-center justify-center px-6">
                 <div className="spinner"></div>
             </div>
         );
@@ -112,7 +202,7 @@ export default function Package() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="max-w-6xl w-full mx-auto px-6 py-10">
             <div className="mb-10 p-8 bg-black border border-white/10 rounded-3xl shadow-[0_0_40px_rgba(236,72,153,0.1)]">
                 <h1 className="text-4xl font-extrabold font-mono text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400 mb-4">
                     {pkg.name}
@@ -131,7 +221,7 @@ export default function Package() {
                 type="button"
                 onClick={async () => {
                     try {
-                        await navigator.clipboard.writeText(publishCommand);
+                        await navigator.clipboard.writeText(installCommand);
                         showToast({
                             title: "Copied",
                             message: "Install command copied to clipboard.",
@@ -146,13 +236,33 @@ export default function Package() {
                     }
                 }}
                 className="inline-flex items-center gap-2 px-6 py-4 mb-12 bg-black border border-white/20 rounded-xl font-mono text-pink-400 shadow-inner hover:border-pink-400/60 hover:text-pink-300 transition-colors w-full sm:w-auto cursor-pointer"
-                aria-label="Copy install command"
             >
-                <span className="text-slate-500">$</span> {publishCommand}
+                <span className="text-slate-500">$</span> mlnpm install{" "}
+                {pkg.name}
             </button>
 
+            <div className="mt-6 mb-12 w-full rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                    Documentation
+                </h2>
+                <div className="max-w-none text-[0.95rem] leading-relaxed text-slate-200">
+                    {pkg.documentation_md ? (
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={markdownComponents}
+                        >
+                            {pkg.documentation_md}
+                        </ReactMarkdown>
+                    ) : (
+                        <p className="text-sm text-slate-500">
+                            No documentation provided yet.
+                        </p>
+                    )}
+                </div>
+            </div>
+
             {pkg.versions.length > 0 ? (
-                <div className="mt-4">
+                <>
                     <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                         Versions
                         <span className="bg-pink-500/20 text-pink-400 text-sm py-1 px-3 rounded-full">{pkg.versions.length}</span>
@@ -204,7 +314,7 @@ export default function Package() {
                                                     Yanked
                                                 </span>
                                             ) : (
-                                                <span className="text-sm font-medium text-slate-300">
+                                                <span className="inline-flex px-3 py-1 rounded-full text-sm font-semibold tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                     Active
                                                 </span>
                                             )}
@@ -214,8 +324,91 @@ export default function Package() {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </>
             ) : null}
+
+            <div className="mt-10 mb-12">
+                <h2 className="text-2xl font-bold text-white mb-6">Usage Example</h2>
+                <pre
+                    className="overflow-x-auto rounded-3xl border border-white/10 p-8 text-[0.95rem] leading-relaxed font-mono shadow-[0_0_40px_rgba(236,72,153,0.05)]"
+                    style={{ background: "#09090b" }}
+                >
+                    <code>
+                        <span style={{ color: "#e879f9", fontStyle: "italic" }}>import</span>
+                        <span style={{ color: "#d6deeb" }}> model </span>
+                        <span style={{ color: "#e879f9", fontStyle: "italic" }}>from</span>
+                        <span style={{ color: "#d6deeb" }}> </span>
+                        <span style={{ color: "#fda4af" }}>{`"${pkg.name}"`}</span>
+                        <span style={{ color: "#fb7185" }}>;</span>
+                        {"\n\n"}
+
+                        <span style={{ color: "#637777", fontStyle: "italic" }}>{"// Downloads the model on first run, then loads from cache"}</span>
+                        {"\n"}
+
+                        <span style={{ color: "#e879f9", fontStyle: "italic" }}>await</span>
+                        <span style={{ color: "#d6deeb" }}> model</span>
+                        <span style={{ color: "#fb7185" }}>.</span>
+                        <span style={{ color: "#f472b6" }}>init</span>
+                        <span style={{ color: "#d6deeb" }}>()</span>
+                        <span style={{ color: "#fb7185" }}>;</span>
+                        {"\n\n"}
+
+                        {((!latestVersion?.has_predict && !latestVersion?.has_stream) || latestVersion?.has_predict) && (
+                            <>
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{"// Run inference with plain JS objects"}</span>
+                                {"\n"}
+                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>const</span>
+                                <span style={{ color: "#d6deeb" }}> result </span>
+                                <span style={{ color: "#fb7185" }}>=</span>
+                                <span style={{ color: "#d6deeb" }}> </span>
+                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>await</span>
+                                <span style={{ color: "#d6deeb" }}> model</span>
+                                <span style={{ color: "#fb7185" }}>.</span>
+                                <span style={{ color: "#f472b6" }}>predict</span>
+                                <span style={{ color: "#fb7185" }}>{"({"}</span>
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{" /* input data */ "}</span>
+                                <span style={{ color: "#fb7185" }}>{"})"}</span>
+                                <span style={{ color: "#fb7185" }}>;</span>
+                                {"\n"}
+                                <span style={{ color: "#d6deeb" }}>console</span>
+                                <span style={{ color: "#fb7185" }}>.</span>
+                                <span style={{ color: "#f472b6" }}>log</span>
+                                <span style={{ color: "#d6deeb" }}>(result)</span>
+                                <span style={{ color: "#fb7185" }}>;</span>
+                                {latestVersion?.has_stream ? "\n\n" : ""}
+                            </>
+                        )}
+
+                        {latestVersion?.has_stream && (
+                            <>
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{"// Or stream tokens/chunks in real-time"}</span>
+                                {"\n"}
+                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>const</span>
+                                <span style={{ color: "#d6deeb" }}> stream </span>
+                                <span style={{ color: "#fb7185" }}>=</span>
+                                <span style={{ color: "#d6deeb" }}> model</span>
+                                <span style={{ color: "#fb7185" }}>.</span>
+                                <span style={{ color: "#f472b6" }}>stream</span>
+                                <span style={{ color: "#fb7185" }}>{"({"}</span>
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{" /* prompt/input */ "}</span>
+                                <span style={{ color: "#fb7185" }}>{"})"}</span>
+                                <span style={{ color: "#fb7185" }}>;</span>
+                                {"\n\n"}
+                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>for await</span>
+                                <span style={{ color: "#d6deeb" }}> (</span>
+                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>const</span>
+                                <span style={{ color: "#d6deeb" }}> chunk </span>
+                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>of</span>
+                                <span style={{ color: "#d6deeb" }}> stream) {"{"}</span>
+                                {"\n"}
+                                <span style={{ color: "#d6deeb" }}>{"    "}process.stdout.write(chunk.token);</span>
+                                {"\n"}
+                                <span style={{ color: "#d6deeb" }}>{"}"}</span>
+                            </>
+                        )}
+                    </code>
+                </pre>
+            </div>
 
             <CustomToast toast={toast} onOpenChange={setOpen} />
         </div>

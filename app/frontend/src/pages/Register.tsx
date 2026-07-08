@@ -124,7 +124,8 @@ function Register({ onLogin }: { onLogin: () => void }) {
                 const data = await api("/auth/verify-otp", {
                     method: "POST",
                     body: JSON.stringify({ email, otp })
-                });
+                }) as { token: string; user: { id: string; username: string; email: string } };
+                
                 setAuth(data.token, data.user);
                 onLogin();
                 navigate("/explore");

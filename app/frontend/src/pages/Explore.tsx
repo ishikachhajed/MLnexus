@@ -38,7 +38,7 @@ export default function Explore() {
                 }
                 const query = params.toString();
 
-                const data = await api(`/packages${query ? `?${query}` : ""}`);
+                const data = await api(`/packages${query ? `?${query}` : ""}`) as { packages: PackageSummary[] };
                 if (!isActive) {
                     return;
                 }

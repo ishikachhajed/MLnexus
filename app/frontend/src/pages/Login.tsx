@@ -18,7 +18,8 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             const data = await api("/auth/login", {
                 method: "POST",
                 body: JSON.stringify({ username, password }),
-            });
+            }) as { token: string; user: { id: string; username: string; email: string } };
+            
             setAuth(data.token, data.user);
             onLogin();
             navigate("/explore");
