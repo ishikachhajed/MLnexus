@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
 import CustomToast from "../components/CustomToast";
 import { useToastState } from "../hooks/useToastState";
+import { Link, useNavigate } from "react-router-dom";
+import { getToken } from "../utils/api";
 
 export default function Landing() {
     const command = "mlnexus install package-name";
     const { toast, showToast, setOpen } = useToastState();
+    const navigate = useNavigate();
 
     const handleCopy = async () => {
         try {
@@ -51,6 +53,26 @@ export default function Landing() {
                 <Link to="/register" className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/50 rounded-lg hover:bg-pink-500/10 transition-all">
                     Get Started
                 </Link>
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (!getToken()) {
+                            showToast({
+                                title: "Login required",
+                                message: "Please login or sign up to upload.",
+                                variant: "error",
+                            });
+                            window.setTimeout(() => {
+                                navigate("/login");
+                            }, 600);
+                            return;
+                        }
+                        navigate("/upload");
+                    }}
+                    className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/40 rounded-lg hover:bg-pink-500/10 transition-all"
+                >
+                    Upload Model
+                </button>
             </div>
             <CustomToast toast={toast} onOpenChange={setOpen} />
         </div>
