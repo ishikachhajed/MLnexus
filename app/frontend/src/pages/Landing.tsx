@@ -52,7 +52,7 @@ export default function Landing() {
                 </Link>
                 {user ? (
                     <>
-                        <Link to="/upload" className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/50 rounded-lg hover:bg-pink-500/10 transition-all">
+                        <Link to="/manage" className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/50 rounded-lg hover:bg-pink-500/10 transition-all">
                             Manage Variant
                         </Link>
                         <Link to="/delete" className="px-6 py-3 text-base font-semibold text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all">

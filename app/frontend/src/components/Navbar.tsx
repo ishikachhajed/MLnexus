@@ -109,7 +109,7 @@ function Navbar({
                                                 Profile
                                             </Link>
                                             <Link
-                                                to="/upload"
+                                                to="/manage"
                                                 className="block rounded-lg px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
                                                 onClick={() =>
                                                     setAvatarOpen(false)
@@ -221,7 +221,7 @@ function Navbar({
                                                     Profile
                                                 </Link>
                                                 <Link
-                                                    to="/upload"
+                                                    to="/manage"
                                                     className="rounded-lg px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
                                                     onClick={() => {
                                                         setAvatarOpen(false);
