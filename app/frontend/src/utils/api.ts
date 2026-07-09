@@ -5,8 +5,37 @@ export interface User {
   username: string;
 }
 
+function isTokenExpired(token: string): boolean {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+        return true;
+    }
+    try {
+        const payloadBase64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = payloadBase64.padEnd(
+            payloadBase64.length + ((4 - (payloadBase64.length % 4)) % 4),
+            "=",
+        );
+        const payload = JSON.parse(atob(padded)) as { exp?: number };
+        if (!payload.exp) {
+            return true;
+        }
+        return payload.exp * 1000 <= Date.now();
+    } catch {
+        return true;
+    }
+}
+
 export function getToken() {
-  return localStorage.getItem("mlnexus_token");
+    const token = localStorage.getItem("mlnexus_token");
+    if (!token) {
+        return null;
+    }
+    if (isTokenExpired(token)) {
+        clearAuth();
+        return null;
+    }
+    return token;
 }
 
 export function setAuth(token: string, user: User) {
@@ -15,8 +44,11 @@ export function setAuth(token: string, user: User) {
 }
 
 export function getUser(): User | null {
-  const raw = localStorage.getItem("mlnexus_user");
-  return raw ? JSON.parse(raw) : null;
+    if (!getToken()) {
+        return null;
+    }
+    const raw = localStorage.getItem("mlnexus_user");
+    return raw ? JSON.parse(raw) : null;
 }
 
 export function clearAuth() {
