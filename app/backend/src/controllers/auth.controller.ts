@@ -6,6 +6,7 @@ import { z } from "zod";
 import { pool, query } from "../db/client.js";
 import { env } from "../config/env.js";
 import { sendOtpEmail, sendPasswordResetOtpEmail } from "../services/email.service.js";
+import { getCloudinarySignature as buildCloudinarySignature } from "../services/cloudinary.service.js";
 
 const registerSchema = z.object({
     username: z
@@ -48,6 +49,11 @@ const resetPasswordSchema = z.object({
     email: z.string().email(),
     otp: z.string().min(4).max(12),
     password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+const updateProfileSchema = z.object({
+    full_name: z.string().min(1).max(200),
+    avatar_url: z.string().url().optional().nullable(),
 });
 
 const SALT_ROUNDS = 12;
@@ -492,4 +498,56 @@ export async function resetPassword(req: Request, res: Response) {
     ]);
 
     res.status(200).json({ message: "Password updated" });
+}
+
+export async function getProfile(req: Request, res: Response) {
+    const userId = req.user!.id;
+    
+    const { rows } = await query<{
+        id: string;
+        username: string;
+        email: string;
+        full_name: string;
+        avatar_url: string | null;
+        packages_count: number;
+    }>(
+        "SELECT id, username, email, full_name, avatar_url, packages_count FROM users WHERE id = $1",
+        [userId],
+    );
+
+    if (!rows.length) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+    
+    res.json({ user: rows[0] });
+}
+
+export async function updateProfile(req: Request, res: Response) {
+    const parsed = updateProfileSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ error: z.flattenError(parsed.error) });
+        return;
+    }
+
+    const userId = req.user!.id;
+    const { full_name, avatar_url } = parsed.data;
+
+    const { rows } = await query<{
+        id: string;
+        username: string;
+        email: string;
+        full_name: string;
+        avatar_url: string | null;
+        packages_count: number;
+    }>(
+        "UPDATE users SET full_name = $1, avatar_url = $2, updated_at = now() WHERE id = $3 RETURNING id, username, email, full_name, avatar_url, packages_count",
+        [full_name, avatar_url ?? null, userId],
+    );
+
+    res.json({ user: rows[0] });
+}
+
+export async function getCloudinarySignature(req: Request, res: Response) {
+    res.json(buildCloudinarySignature());
 }
