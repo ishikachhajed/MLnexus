@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import * as Avatar from "@radix-ui/react-avatar";
 import { getToken } from "../utils/api";
@@ -16,18 +16,14 @@ function Navbar({
     const [avatarOpen, setAvatarOpen] = useState(false);
     const navigate = useNavigate();
 
+    const isAuthenticated = Boolean(user && getToken());
+
     const handleLogout = () => {
         onLogout();
         navigate("/");
         setMenuOpen(false);
         setAvatarOpen(false);
     };
-
-    useEffect(() => {
-        if (user && !getToken()) {
-            handleLogout();
-        }
-    }, [user]);
 
     return (
         <>
@@ -63,7 +59,7 @@ function Navbar({
                         >
                             Explore
                         </Link>
-                        {user ? (
+                        {isAuthenticated ? (
                             <>
                                 <div
                                     className="relative ml-4"
@@ -176,7 +172,7 @@ function Navbar({
                             >
                                 Explore
                             </Link>
-                            {user ? (
+                            {isAuthenticated ? (
                                 <>
                                     <div className="pt-2">
                                         <button
