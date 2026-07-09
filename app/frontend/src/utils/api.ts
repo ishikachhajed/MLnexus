@@ -54,6 +54,7 @@ export function getUser(): User | null {
 export function clearAuth() {
   localStorage.removeItem("mlnexus_token");
   localStorage.removeItem("mlnexus_user");
+  localStorage.removeItem("mlnexus_avatar_url");
 }
 
 export async function api(path: string, options: RequestInit = {}) {

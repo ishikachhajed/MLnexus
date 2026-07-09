@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import * as Avatar from "@radix-ui/react-avatar";
 import { getToken } from "../utils/api";
@@ -14,6 +14,7 @@ function Navbar({
 }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [avatarOpen, setAvatarOpen] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const isAuthenticated = Boolean(user && getToken());
@@ -24,6 +25,17 @@ function Navbar({
         setMenuOpen(false);
         setAvatarOpen(false);
     };
+
+    useEffect(() => {
+        const syncAvatar = () => {
+            setAvatarUrl(localStorage.getItem("mlnexus_avatar_url"));
+        };
+        syncAvatar();
+        window.addEventListener("avatar-updated", syncAvatar);
+        return () => {
+            window.removeEventListener("avatar-updated", syncAvatar);
+        };
+    }, []);
 
     return (
         <>
@@ -76,12 +88,12 @@ function Navbar({
                                     >
                                         <Avatar.Root className="h-7 w-7 overflow-hidden rounded-full">
                                             <Avatar.Image
-                                                src="/avatar.jpg"
+                                                src={avatarUrl || "/avatar.png"}
                                                 alt="User avatar"
                                                 className="h-full w-full object-cover"
                                             />
                                             <Avatar.Fallback className="flex h-full w-full items-center justify-center bg-black border border-white/10 text-[10px] font-semibold text-white/70">
-                                                <img src="/avatar.jpg" alt="Fallback" className="h-full w-full object-cover opacity-50" />
+                                                <img src="/avatar.png" alt="Fallback" className="h-full w-full object-cover opacity-50" />
                                             </Avatar.Fallback>
                                         </Avatar.Root>
                                     </button>
@@ -184,12 +196,12 @@ function Navbar({
                                         >
                                             <Avatar.Root className="h-7 w-7 overflow-hidden rounded-full border border-white/10">
                                                 <Avatar.Image
-                                                    src="/avatar.jpg"
+                                                    src={avatarUrl || "/avatar.png"}
                                                     alt="User avatar"
                                                     className="h-full w-full object-cover"
                                                 />
                                                 <Avatar.Fallback className="flex h-full w-full items-center justify-center bg-black border border-white/10 text-[10px] font-semibold text-white/70">
-                                                    <img src="/avatar.jpg" alt="Fallback" className="h-full w-full object-cover opacity-50" />
+                                                    <img src="/avatar.png" alt="Fallback" className="h-full w-full object-cover opacity-50" />
                                                 </Avatar.Fallback>
                                             </Avatar.Root>
                                             <span className="text-sm font-medium text-white/90">
