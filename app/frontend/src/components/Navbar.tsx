@@ -103,7 +103,7 @@ function Navbar({
                                                     setAvatarOpen(false)
                                                 }
                                             >
-                                                Upload a Model
+                                                Manage Variant
                                             </Link>
                                             <Link
                                                 to="/delete"
@@ -112,7 +112,7 @@ function Navbar({
                                                     setAvatarOpen(false)
                                                 }
                                             >
-                                                Delete a Model
+                                                Delete Variant
                                             </Link>
                                             <button
                                                 type="button"
@@ -216,7 +216,7 @@ function Navbar({
                                                         setMenuOpen(false);
                                                     }}
                                                 >
-                                                    Upload a Model
+                                                    Manage Variant
                                                 </Link>
                                                 <Link
                                                     to="/delete"
@@ -226,7 +226,7 @@ function Navbar({
                                                         setMenuOpen(false);
                                                     }}
                                                 >
-                                                    Delete a Model
+                                                    Delete Variant
                                                 </Link>
                                                 <button
                                                     type="button"
