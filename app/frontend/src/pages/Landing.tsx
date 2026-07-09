@@ -1,10 +1,12 @@
 import CustomToast from "../components/CustomToast";
 import { useToastState } from "../hooks/useToastState";
 import { Link } from "react-router-dom";
+import { getUser } from "../utils/api";
 
 export default function Landing() {
     const command = "mlnexus install package-name";
     const { toast, showToast, setOpen } = useToastState();
+    const user = getUser();
 
     const handleCopy = async () => {
         try {
@@ -48,9 +50,20 @@ export default function Landing() {
                 <Link to="/explore" className="px-6 py-3 text-base font-semibold text-white bg-pink-600 rounded-lg shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:bg-pink-500 hover:-translate-y-0.5 transition-all">
                     Explore Packages
                 </Link>
-                <Link to="/register" className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/50 rounded-lg hover:bg-pink-500/10 transition-all">
-                    Get Started
-                </Link>
+                {user ? (
+                    <>
+                        <Link to="/upload" className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/50 rounded-lg hover:bg-pink-500/10 transition-all">
+                            Manage Variant
+                        </Link>
+                        <Link to="/delete" className="px-6 py-3 text-base font-semibold text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all">
+                            Delete Variant
+                        </Link>
+                    </>
+                ) : (
+                    <Link to="/register" className="px-6 py-3 text-base font-semibold text-pink-400 border border-pink-500/50 rounded-lg hover:bg-pink-500/10 transition-all">
+                        Get Started
+                    </Link>
+                )}
             </div>
             <CustomToast toast={toast} onOpenChange={setOpen} />
         </div>
