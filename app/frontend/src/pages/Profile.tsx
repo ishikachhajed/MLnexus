@@ -203,7 +203,7 @@ export default function Profile() {
                     <div className="flex items-center gap-4">
                         <Avatar.Root className="h-20 w-20 overflow-hidden rounded-full border border-white/10 bg-black">
                             <Avatar.Image
-                                src={avatarUrl ?? "/avatar.png"}
+                                src={avatarUrl ?? "/avatar.jpg"}
                                 alt="Profile avatar"
                                 className="h-full w-full object-cover"
                             />

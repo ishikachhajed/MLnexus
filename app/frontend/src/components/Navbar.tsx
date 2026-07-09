@@ -88,12 +88,12 @@ function Navbar({
                                     >
                                         <Avatar.Root className="h-7 w-7 overflow-hidden rounded-full">
                                             <Avatar.Image
-                                                src={avatarUrl || "/avatar.png"}
+                                                src={avatarUrl || "/avatar.jpg"}
                                                 alt="User avatar"
                                                 className="h-full w-full object-cover"
                                             />
                                             <Avatar.Fallback className="flex h-full w-full items-center justify-center bg-black border border-white/10 text-[10px] font-semibold text-white/70">
-                                                <img src="/avatar.png" alt="Fallback" className="h-full w-full object-cover opacity-50" />
+                                                <img src="/avatar.jpg" alt="Fallback" className="h-full w-full object-cover opacity-50" />
                                             </Avatar.Fallback>
                                         </Avatar.Root>
                                     </button>
@@ -196,12 +196,12 @@ function Navbar({
                                         >
                                             <Avatar.Root className="h-7 w-7 overflow-hidden rounded-full border border-white/10">
                                                 <Avatar.Image
-                                                    src={avatarUrl || "/avatar.png"}
+                                                    src={avatarUrl || "/avatar.jpg"}
                                                     alt="User avatar"
                                                     className="h-full w-full object-cover"
                                                 />
                                                 <Avatar.Fallback className="flex h-full w-full items-center justify-center bg-black border border-white/10 text-[10px] font-semibold text-white/70">
-                                                    <img src="/avatar.png" alt="Fallback" className="h-full w-full object-cover opacity-50" />
+                                                    <img src="/avatar.jpg" alt="Fallback" className="h-full w-full object-cover opacity-50" />
                                                 </Avatar.Fallback>
                                             </Avatar.Root>
                                             <span className="text-sm font-medium text-white/90">
