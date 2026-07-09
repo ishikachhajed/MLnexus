@@ -139,7 +139,7 @@ export default function Profile() {
         }
     };
 
-    const handleSave = async (event: React.FormEvent) => {
+    const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!fullName.trim()) {
             showToast({
