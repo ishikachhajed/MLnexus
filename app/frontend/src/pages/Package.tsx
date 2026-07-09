@@ -297,7 +297,7 @@ export default function Package() {
                                             </span>
                                         </td>
                                         <td className="py-5 px-6">
-                                            <span className="inline-flex px-3 py-1 rounded-full text-sm font-semibold tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            <span className="inline-flex px-3 py-1 rounded-full text-sm font-semibold tracking-wide bg-white/5 text-white/70 border border-white/10">
                                                 {formatBytes(
                                                     version.onnx_file_size,
                                                 )}
