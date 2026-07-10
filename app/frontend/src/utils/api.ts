@@ -26,6 +26,27 @@ function isTokenExpired(token: string): boolean {
     }
 }
 
+export function getTokenExpiryMs(token: string): number | null {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+        return null;
+    }
+    try {
+        const payloadBase64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = payloadBase64.padEnd(
+            payloadBase64.length + ((4 - (payloadBase64.length % 4)) % 4),
+            "=",
+        );
+        const payload = JSON.parse(atob(padded)) as { exp?: number };
+        if (!payload.exp) {
+            return null;
+        }
+        return payload.exp * 1000;
+    } catch {
+        return null;
+    }
+}
+
 export function getToken() {
     const token = localStorage.getItem("mlnexus_token");
     if (!token) {
