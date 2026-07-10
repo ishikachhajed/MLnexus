@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { createSHA256 } from "hash-wasm";
 import CustomToast from "../components/CustomToast";
 import { useToastState } from "../hooks/useToastState";
 import { api, getUser } from "../utils/api";
@@ -106,6 +107,22 @@ function formatBytes(bytes: number) {
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+async function hashFileSha256(file: File): Promise<string> {
+    const hasher = await createSHA256();
+    hasher.init();
+
+    const reader = file.stream().getReader();
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        if (value) {
+            hasher.update(value);
+        }
+    }
+
+    return hasher.digest("hex");
 }
 
 
@@ -343,7 +360,7 @@ export default function Manage() {
             xhr.send(file);
         });
 
-    const fileList: UploadFile[] = useMemo(
+    const displayFiles = useMemo(
         () => accepted.map((file) => ({ name: file.name, size: file.size })),
         [accepted],
     );
@@ -538,6 +555,14 @@ export default function Manage() {
                 });
             }
 
+            const fileList: UploadFile[] = await Promise.all(
+                accepted.map(async (file) => ({
+                    name: file.name,
+                    size: file.size,
+                    hash: await hashFileSha256(file),
+                })),
+            );
+
             const publish = (await api(`/packages/${name.trim()}/versions`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -588,6 +613,11 @@ export default function Manage() {
             }
 
             setIsUploading(false);
+
+            await api(
+                `/packages/${name.trim()}/versions/${version.trim()}/verify`,
+                { method: "POST" },
+            );
             activeXhrsRef.current = [];
             uploadedBytesRef.current = {};
             setUploadProgress(100);
@@ -773,9 +803,9 @@ export default function Manage() {
                                 </>
                             ) : null}
                         </label>
-                        {fileList.length > 0 ? (
+                        {displayFiles.length > 0 ? (
                             <div className="mt-4 space-y-2 text-sm text-white/90">
-                                {fileList.map((file) => (
+                                {displayFiles.map((file) => (
                                     <div
                                         key={file.name}
                                         className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/60 px-3 py-2"
