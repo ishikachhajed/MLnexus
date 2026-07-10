@@ -119,7 +119,7 @@ export default function Package() {
     const [pkg, setPkg] = useState<PackageDetails | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast, showToast, setOpen } = useToastState();
-    const installCommand = useMemo(() => `mlnpm install ${name ?? ""}`, [name]);
+    const installCommand = useMemo(() => `mlnexus install ${name ?? ""}`, [name]);
 
     useEffect(() => {
         if (!name) {
@@ -237,7 +237,7 @@ export default function Package() {
                 }}
                 className="inline-flex items-center gap-2 px-6 py-4 mb-12 bg-black border border-white/20 rounded-xl font-mono text-pink-400 shadow-inner hover:border-pink-400/60 hover:text-pink-300 transition-colors w-full sm:w-auto cursor-pointer"
             >
-                <span className="text-slate-500">$</span> mlnpm install{" "}
+                <span className="text-slate-500">$</span> mlnexus install{" "}
                 {pkg.name}
             </button>
 
