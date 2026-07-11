@@ -1,0 +1,299 @@
+import type { ReactNode } from "react";
+
+export type ReviewFile = {
+    name: string;
+    size: number;
+    file_type: "model" | "wrapper";
+};
+
+type PublishReviewProps = {
+    packageName: string;
+    version: string;
+    description: string;
+    isNewPackage: boolean;
+    files: ReviewFile[];
+    isSubmitting: boolean;
+    isUploading: boolean;
+    uploadProgress: number;
+    onBack: () => void;
+    onPublish: () => void;
+    onCancelUpload: () => void;
+    children?: ReactNode;
+};
+
+function formatBytes(bytes: number) {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+function FileTypeTag({ type }: { type: "model" | "wrapper" }) {
+    const isModel = type === "model";
+    return (
+        <span
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                isModel
+                    ? "bg-pink-500/15 text-pink-300 ring-1 ring-pink-500/25"
+                    : "bg-indigo-500/15 text-indigo-300 ring-1 ring-indigo-500/25"
+            }`}
+        >
+            <span
+                className={`inline-block h-1.5 w-1.5 rounded-full ${
+                    isModel ? "bg-pink-400" : "bg-indigo-400"
+                }`}
+            />
+            {isModel ? "Model" : "Wrapper"}
+        </span>
+    );
+}
+
+export default function PublishReview({
+    packageName,
+    version,
+    description,
+    isNewPackage,
+    files,
+    isSubmitting,
+    isUploading,
+    uploadProgress,
+    onBack,
+    onPublish,
+    onCancelUpload,
+    children,
+}: PublishReviewProps) {
+    const isBlocking = isSubmitting || isUploading;
+    const modelFiles = files.filter((f) => f.file_type === "model");
+    const wrapperFiles = files.filter((f) => f.file_type === "wrapper");
+    const totalSize = files.reduce((acc, f) => acc + f.size, 0);
+
+    return (
+        <div className="max-w-4xl w-full mx-auto px-6 py-10">
+            {/* Header */}
+            <div className="mb-8 flex items-center gap-4">
+                <button
+                    type="button"
+                    onClick={onBack}
+                    disabled={isBlocking}
+                    className="group flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-4 py-2.5 text-sm font-medium text-white/70 transition-all hover:border-white/20 hover:bg-black/80 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    <svg
+                        className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 19l-7-7 7-7"
+                        />
+                    </svg>
+                    Back
+                </button>
+                <div>
+                    <h1 className="text-2xl font-extrabold text-white">
+                        Review &amp; Publish
+                    </h1>
+                    <p className="text-sm text-white/70">
+                        Confirm your package details before publishing.
+                    </p>
+                </div>
+            </div>
+
+            {/* Package info card */}
+            <div className="rounded-2xl border border-white/10 bg-black/60 p-6 mb-6">
+                <h2 className="text-lg font-semibold text-white mb-4">
+                    Package Summary
+                </h2>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                    <div>
+                        <span className="text-white/50">Name</span>
+                        <p className="font-medium text-white">{packageName}</p>
+                    </div>
+                    <div>
+                        <span className="text-white/50">Version</span>
+                        <p className="font-medium text-white font-mono">
+                            {version}
+                        </p>
+                    </div>
+                    <div>
+                        <span className="text-white/50">Type</span>
+                        <p className="font-medium text-white/90">
+                            {isNewPackage ? "New package" : "Existing package"}
+                        </p>
+                    </div>
+                    <div>
+                        <span className="text-white/50">Total size</span>
+                        <p className="font-medium text-white/90">
+                            {formatBytes(totalSize)}
+                        </p>
+                    </div>
+                    {description ? (
+                        <div className="col-span-2">
+                            <span className="text-white/50">Description</span>
+                            <p className="font-medium text-white/90">
+                                {description}
+                            </p>
+                        </div>
+                    ) : null}
+                </div>
+            </div>
+
+            {/* Stats bar */}
+            <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-4 py-2.5">
+                    <span className="text-xs font-medium text-white/50 uppercase tracking-wide">
+                        Files
+                    </span>
+                    <span className="text-sm font-bold text-white">
+                        {files.length}
+                    </span>
+                </div>
+                {modelFiles.length > 0 ? (
+                    <div className="flex items-center gap-2 rounded-xl border border-pink-500/20 bg-pink-500/5 px-4 py-2.5">
+                        <span className="inline-block h-2 w-2 rounded-full bg-pink-400" />
+                        <span className="text-sm font-medium text-pink-300">
+                            {modelFiles.length} model
+                            {modelFiles.length !== 1 ? "s" : ""}
+                        </span>
+                    </div>
+                ) : null}
+                {wrapperFiles.length > 0 ? (
+                    <div className="flex items-center gap-2 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-2.5">
+                        <span className="inline-block h-2 w-2 rounded-full bg-indigo-400" />
+                        <span className="text-sm font-medium text-indigo-300">
+                            {wrapperFiles.length} wrapper
+                            {wrapperFiles.length !== 1 ? "s" : ""}
+                        </span>
+                    </div>
+                ) : null}
+            </div>
+
+            {/* File list */}
+            <div className="rounded-2xl border border-white/10 bg-black/60 overflow-hidden mb-8">
+                <div className="grid grid-cols-[1fr_auto_auto] items-center gap-4 border-b border-white/10 bg-black/40 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white/50">
+                    <span>File name</span>
+                    <span className="text-right">Size</span>
+                    <span className="text-center">Type</span>
+                </div>
+                <div className="divide-y divide-white/10">
+                    {files.map((file, index) => (
+                        <div
+                            key={file.name}
+                            className={`grid grid-cols-[1fr_auto_auto] items-center gap-4 px-6 py-3.5 transition-colors ${
+                                index % 2 === 0
+                                    ? "bg-transparent"
+                                    : "bg-black/20"
+                            }`}
+                        >
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-white/90">
+                                    {file.name}
+                                </p>
+                            </div>
+                            <span className="text-xs font-mono text-white/50 whitespace-nowrap">
+                                {formatBytes(file.size)}
+                            </span>
+                            <FileTypeTag type={file.file_type} />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Publish button */}
+            {!isUploading ? (
+                <button
+                    type="button"
+                    onClick={onPublish}
+                    disabled={isSubmitting}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-6 py-3.5 text-base font-semibold text-white shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-all hover:bg-pink-500 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <svg
+                                className="h-5 w-5 animate-spin"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                />
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                />
+                            </svg>
+                            Publishing...
+                        </>
+                    ) : (
+                        <>
+                            <svg
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                                />
+                            </svg>
+                            Publish {packageName}@{version}
+                        </>
+                    )}
+                </button>
+            ) : null}
+
+            {/* Upload overlay */}
+            {isUploading ? (
+                <div className="fixed inset-0 z-40 cursor-not-allowed bg-black/40 backdrop-blur-sm" />
+            ) : null}
+
+            {/* Upload progress */}
+            {isUploading ? (
+                <div className="fixed bottom-6 left-1/2 z-50 w-[min(680px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl border border-white/10 bg-black/90 p-4 shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                    <div className="flex items-center justify-between gap-4">
+                        <div>
+                            <p className="text-sm font-bold text-white">
+                                Uploading to MLnexus Cloud...
+                            </p>
+                            <p className="text-xs text-pink-400 font-medium mt-0.5">
+                                Please keep this tab open.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={onCancelUpload}
+                            className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+                        >
+                            Cancel upload
+                        </button>
+                    </div>
+                    <div className="mt-4 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                        <div
+                            className="h-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(236,72,153,0.8)]"
+                            style={{ width: `${uploadProgress}%` }}
+                        />
+                    </div>
+                    <p className="mt-2 text-xs font-semibold tracking-wide text-white/50 text-right">
+                        {uploadProgress}% complete
+                    </p>
+                </div>
+            ) : null}
+
+            {/* Toast slot */}
+            {children}
+        </div>
+    );
+}

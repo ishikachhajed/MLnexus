@@ -8,11 +8,13 @@ import { createSHA256 } from "hash-wasm";
 import CustomToast from "../components/CustomToast";
 import { useToastState } from "../hooks/useToastState";
 import { api, getUser } from "../utils/api";
+import PublishReview from "../components/PublishReview";
 
 type UploadFile = {
     name: string;
     size: number;
     hash?: string;
+    file_type: "model" | "wrapper";
 };
 
 type PackageLookup = {
@@ -210,6 +212,7 @@ export default function Manage() {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
+    const [showReview, setShowReview] = useState(false);
     const [packageLookup, setPackageLookup] = useState<PackageLookup>({
         exists: false,
         latestVersion: null,
@@ -225,14 +228,15 @@ export default function Manage() {
 
     const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selected = Array.from(event.target.files ?? []);
-        const validFiles = selected.filter((file) =>
-            file.name.toLowerCase().endsWith(".onnx"),
-        );
+        const validFiles = selected.filter((file) => {
+            const name = file.name.toLowerCase();
+            return name.endsWith(".onnx") || name.endsWith(".json");
+        });
 
         if (validFiles.length !== selected.length) {
             showToast({
                 title: "Invalid file",
-                message: "Only .onnx files are accepted.",
+                message: "Only .onnx models and .json wrappers are accepted.",
                 variant: "error",
             });
         }
@@ -265,14 +269,15 @@ export default function Manage() {
             return;
         }
 
-        const validFiles = dropped.filter((file) =>
-            file.name.toLowerCase().endsWith(".onnx"),
-        );
+        const validFiles = dropped.filter((file) => {
+            const name = file.name.toLowerCase();
+            return name.endsWith(".onnx") || name.endsWith(".json");
+        });
         
         if (validFiles.length !== dropped.length) {
             showToast({
                 title: "Invalid file",
-                message: "Only .onnx files are accepted.",
+                message: "Only .onnx models and .json wrappers are accepted.",
                 variant: "error",
             });
         }
@@ -308,6 +313,7 @@ export default function Manage() {
         setIsUploading(false);
         setIsSubmitting(false);
         setAccepted([]);
+        setShowReview(false);
         showToast({
             title: "Upload canceled",
             message: "The upload was stopped.",
@@ -361,7 +367,11 @@ export default function Manage() {
         });
 
     const displayFiles = useMemo(
-        () => accepted.map((file) => ({ name: file.name, size: file.size })),
+        () => accepted.map((file) => ({ 
+            name: file.name, 
+            size: file.size,
+            file_type: file.name.toLowerCase().endsWith('.json') ? 'wrapper' as const : 'model' as const 
+        })),
         [accepted],
     );
 
@@ -532,6 +542,22 @@ export default function Manage() {
             return;
         }
 
+        const hasOnnx = accepted.some(file => file.name.toLowerCase().endsWith(".onnx"));
+        if (!hasOnnx) {
+            showToast({
+                title: "Missing model",
+                message: "You must include at least one .onnx model file.",
+                variant: "error",
+            });
+            return;
+        }
+
+        setShowReview(true);
+    };
+
+    const executePublish = async () => {
+        if (isSubmitting) return;
+
         let shouldCleanupVersion = false;
         try {
             setIsSubmitting(true);
@@ -560,6 +586,7 @@ export default function Manage() {
                     name: file.name,
                     size: file.size,
                     hash: await hashFileSha256(file),
+                    file_type: file.name.toLowerCase().endsWith(".json") ? "wrapper" : "model",
                 })),
             );
 
@@ -662,10 +689,31 @@ export default function Manage() {
         } finally {
             setIsSubmitting(false);
             setIsUploading(false);
+            setShowReview(false);
             activeXhrsRef.current = [];
             uploadedBytesRef.current = {};
         }
     };
+
+    if (showReview) {
+        return (
+            <PublishReview
+                packageName={name.trim()}
+                version={version.trim()}
+                description={description.trim()}
+                isNewPackage={isNewPackage}
+                files={displayFiles}
+                isSubmitting={isSubmitting}
+                isUploading={isUploading}
+                uploadProgress={uploadProgress}
+                onBack={() => setShowReview(false)}
+                onPublish={executePublish}
+                onCancelUpload={handleCancelUpload}
+            >
+                <CustomToast toast={toast} onOpenChange={setOpen} />
+            </PublishReview>
+        );
+    }
 
     return (
         <div className="max-w-5xl w-full mx-auto px-6 py-10">
@@ -791,7 +839,7 @@ export default function Manage() {
                         >
                             <input
                                 type="file"
-                                accept=".onnx"
+                                accept=".onnx,.json"
                                 multiple
                                 onChange={onFileChange}
                                 className="hidden"
@@ -800,11 +848,10 @@ export default function Manage() {
                             {!isBlocking ? (
                                 <>
                                     <span className="text-sm font-semibold text-white">
-                                        Drag & drop ONNX files or click to
-                                        browse
+                                        Drag & drop ONNX models or JSON wrappers
                                     </span>
                                     <span className="text-xs text-white/50">
-                                        Only .onnx files are accepted
+                                        Both .onnx and .json files are accepted
                                     </span>
                                 </>
                             ) : null}
@@ -822,6 +869,13 @@ export default function Manage() {
                                         <div className="flex shrink-0 items-center gap-3">
                                             <span className="text-xs text-white/50">
                                                 {formatBytes(file.size)}
+                                            </span>
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                                file.file_type === "model" 
+                                                    ? "bg-pink-500/20 text-pink-300"
+                                                    : "bg-indigo-500/20 text-indigo-300"
+                                            }`}>
+                                                {file.file_type}
                                             </span>
                                             <button
                                                 type="button"
