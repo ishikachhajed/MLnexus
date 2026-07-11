@@ -230,13 +230,13 @@ export default function Manage() {
         const selected = Array.from(event.target.files ?? []);
         const validFiles = selected.filter((file) => {
             const name = file.name.toLowerCase();
-            return name.endsWith(".onnx") || name.endsWith(".json");
+            return name.endsWith(".onnx") || name.endsWith(".js") || name.endsWith(".mjs") || name.endsWith(".ts");
         });
 
         if (validFiles.length !== selected.length) {
             showToast({
                 title: "Invalid file",
-                message: "Only .onnx models and .json wrappers are accepted.",
+                message: "Only .onnx models and .js/.mjs/.ts wrappers are accepted.",
                 variant: "error",
             });
         }
@@ -254,6 +254,23 @@ export default function Manage() {
                         variant: "error",
                     });
                 }
+
+                const existingWrapperCount = prev.filter(
+                    (f) => f.name.match(/\.(js|mjs|ts)$/i)
+                ).length;
+                const newWrapperCount = newFiles.filter(
+                    (f) => f.name.match(/\.(js|mjs|ts)$/i)
+                ).length;
+                
+                if (existingWrapperCount + newWrapperCount > 1) {
+                    showToast({
+                        title: "Only one wrapper allowed",
+                        message: "Remove the existing wrapper file before adding a new one.",
+                        variant: "error",
+                    });
+                    return prev;
+                }
+
                 return [...prev, ...newFiles];
             });
         }
@@ -271,13 +288,13 @@ export default function Manage() {
 
         const validFiles = dropped.filter((file) => {
             const name = file.name.toLowerCase();
-            return name.endsWith(".onnx") || name.endsWith(".json");
+            return name.endsWith(".onnx") || name.endsWith(".js") || name.endsWith(".mjs") || name.endsWith(".ts");
         });
         
         if (validFiles.length !== dropped.length) {
             showToast({
                 title: "Invalid file",
-                message: "Only .onnx models and .json wrappers are accepted.",
+                message: "Only .onnx models and .js/.mjs/.ts wrappers are accepted.",
                 variant: "error",
             });
         }
@@ -295,6 +312,23 @@ export default function Manage() {
                         variant: "error",
                     });
                 }
+
+                const existingWrapperCount = prev.filter(
+                    (f) => f.name.match(/\.(js|mjs|ts)$/i)
+                ).length;
+                const newWrapperCount = newFiles.filter(
+                    (f) => f.name.match(/\.(js|mjs|ts)$/i)
+                ).length;
+                
+                if (existingWrapperCount + newWrapperCount > 1) {
+                    showToast({
+                        title: "Only one wrapper allowed",
+                        message: "Remove the existing wrapper file before adding a new one.",
+                        variant: "error",
+                    });
+                    return prev;
+                }
+
                 return [...prev, ...newFiles];
             });
         }
@@ -370,7 +404,7 @@ export default function Manage() {
         () => accepted.map((file) => ({ 
             name: file.name, 
             size: file.size,
-            file_type: file.name.toLowerCase().endsWith('.json') ? 'wrapper' as const : 'model' as const 
+            file_type: file.name.match(/\.(js|mjs|ts)$/i) ? 'wrapper' as const : 'model' as const 
         })),
         [accepted],
     );
@@ -552,6 +586,24 @@ export default function Manage() {
             return;
         }
 
+        const wrapperCount = accepted.filter(f => f.name.match(/\.(js|mjs|ts)$/i)).length;
+        if (wrapperCount === 0) {
+            showToast({
+                title: "Missing wrapper file",
+                message: "A wrapper config file (.js/.mjs/.ts) is required. This defines how developers use your model with predict().",
+                variant: "error",
+            });
+            return;
+        }
+        if (wrapperCount > 1) {
+            showToast({
+                title: "Too many wrapper files",
+                message: "Only one wrapper config file is allowed per version.",
+                variant: "error",
+            });
+            return;
+        }
+
         setShowReview(true);
     };
 
@@ -586,7 +638,7 @@ export default function Manage() {
                     name: file.name,
                     size: file.size,
                     hash: await hashFileSha256(file),
-                    file_type: file.name.toLowerCase().endsWith(".json") ? "wrapper" : "model",
+                    file_type: file.name.match(/\.(js|mjs|ts)$/i) ? "wrapper" : "model",
                 })),
             );
 
@@ -839,7 +891,7 @@ export default function Manage() {
                         >
                             <input
                                 type="file"
-                                accept=".onnx,.json"
+                                accept=".onnx,.js,.mjs,.ts"
                                 multiple
                                 onChange={onFileChange}
                                 className="hidden"
@@ -848,10 +900,10 @@ export default function Manage() {
                             {!isBlocking ? (
                                 <>
                                     <span className="text-sm font-semibold text-white">
-                                        Drag & drop ONNX models or JSON wrappers
+                                        Drag & drop ONNX models and JS wrappers
                                     </span>
                                     <span className="text-xs text-white/50">
-                                        Both .onnx and .json files are accepted
+                                        .onnx, .js, .mjs, and .ts files are accepted
                                     </span>
                                 </>
                             ) : null}
