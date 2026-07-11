@@ -326,8 +326,9 @@ export async function getVersion(req: Request, res: Response) {
         file_key: string;
         file_size: number;
         file_hash: string | null;
+        file_type: string;
     }>(
-        `SELECT package_id, file_name, file_key, file_size, file_hash
+        `SELECT package_id, file_name, file_key, file_size, file_hash, file_type
         FROM version_files WHERE version_id = $1
         ORDER BY file_name ASC`,
         [ver.id],
@@ -345,6 +346,7 @@ export async function getVersion(req: Request, res: Response) {
                         file_key: ver.onnx_file_key,
                         file_size: ver.onnx_file_size,
                         file_hash: null,
+                        file_type: "model",
                     },
                 ]
               : [];
@@ -356,6 +358,7 @@ export async function getVersion(req: Request, res: Response) {
             version_id: ver.id,
             size: file.file_size,
             hash: file.file_hash,
+            file_type: file.file_type,
             download_url: await generateDownloadUrl(file.file_key),
         })),
     );
