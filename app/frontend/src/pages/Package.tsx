@@ -330,51 +330,54 @@ export default function Package() {
             <div className="mt-10 mb-12">
                 <h2 className="text-2xl font-bold text-white mb-6">Usage Example</h2>
                 <pre
-                    className="overflow-x-auto rounded-3xl border border-white/10 p-8 text-[0.95rem] leading-relaxed font-mono shadow-[0_0_40px_rgba(236,72,153,0.05)]"
-                    style={{ background: "#09090b" }}
+                    className="overflow-x-auto rounded-2xl border border-slate-800 p-6 text-[0.85rem] leading-relaxed font-mono"
+                    style={{ background: "#011627" }}
                 >
                     <code>
-                        <span style={{ color: "#e879f9", fontStyle: "italic" }}>import</span>
+                        <span style={{ color: "#c792ea", fontStyle: "italic" }}>import</span>
                         <span style={{ color: "#d6deeb" }}> model </span>
-                        <span style={{ color: "#e879f9", fontStyle: "italic" }}>from</span>
+                        <span style={{ color: "#c792ea", fontStyle: "italic" }}>from</span>
                         <span style={{ color: "#d6deeb" }}> </span>
-                        <span style={{ color: "#fda4af" }}>{`"${pkg.name}"`}</span>
-                        <span style={{ color: "#fb7185" }}>;</span>
+                        <span style={{ color: "#ecc48d" }}>{`"${pkg.name}"`}</span>
+                        <span style={{ color: "#89ddff" }}>;</span>
                         {"\n\n"}
 
                         <span style={{ color: "#637777", fontStyle: "italic" }}>{"// Downloads the model on first run, then loads from cache"}</span>
                         {"\n"}
 
-                        <span style={{ color: "#e879f9", fontStyle: "italic" }}>await</span>
+                        <span style={{ color: "#c792ea", fontStyle: "italic" }}>await</span>
                         <span style={{ color: "#d6deeb" }}> model</span>
-                        <span style={{ color: "#fb7185" }}>.</span>
-                        <span style={{ color: "#f472b6" }}>init</span>
+                        <span style={{ color: "#89ddff" }}>.</span>
+                        <span style={{ color: "#82aaff" }}>init</span>
                         <span style={{ color: "#d6deeb" }}>()</span>
-                        <span style={{ color: "#fb7185" }}>;</span>
+                        <span style={{ color: "#89ddff" }}>;</span>
                         {"\n\n"}
 
                         {((!latestVersion?.has_predict && !latestVersion?.has_stream) || latestVersion?.has_predict) && (
                             <>
                                 <span style={{ color: "#637777", fontStyle: "italic" }}>{"// Run inference with plain JS objects"}</span>
                                 {"\n"}
-                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>const</span>
+                                <span style={{ color: "#c792ea", fontStyle: "italic" }}>const</span>
                                 <span style={{ color: "#d6deeb" }}> result </span>
-                                <span style={{ color: "#fb7185" }}>=</span>
+                                <span style={{ color: "#89ddff" }}>=</span>
                                 <span style={{ color: "#d6deeb" }}> </span>
-                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>await</span>
+                                <span style={{ color: "#c792ea", fontStyle: "italic" }}>await</span>
                                 <span style={{ color: "#d6deeb" }}> model</span>
-                                <span style={{ color: "#fb7185" }}>.</span>
-                                <span style={{ color: "#f472b6" }}>predict</span>
-                                <span style={{ color: "#fb7185" }}>{"({"}</span>
-                                <span style={{ color: "#637777", fontStyle: "italic" }}>{" /* input data */ "}</span>
-                                <span style={{ color: "#fb7185" }}>{"})"}</span>
-                                <span style={{ color: "#fb7185" }}>;</span>
+                                <span style={{ color: "#89ddff" }}>.</span>
+                                <span style={{ color: "#82aaff" }}>predict</span>
+                                <span style={{ color: "#89ddff" }}>{"({"}</span>
+                                {"\n"}
+                                <span style={{ color: "#d6deeb" }}>{"  "}</span>
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{"// ... your input data"}</span>
+                                {"\n"}
+                                <span style={{ color: "#89ddff" }}>{"})"}</span>
+                                <span style={{ color: "#89ddff" }}>;</span>
                                 {"\n"}
                                 <span style={{ color: "#d6deeb" }}>console</span>
-                                <span style={{ color: "#fb7185" }}>.</span>
-                                <span style={{ color: "#f472b6" }}>log</span>
+                                <span style={{ color: "#89ddff" }}>.</span>
+                                <span style={{ color: "#82aaff" }}>log</span>
                                 <span style={{ color: "#d6deeb" }}>(result)</span>
-                                <span style={{ color: "#fb7185" }}>;</span>
+                                <span style={{ color: "#89ddff" }}>;</span>
                                 {latestVersion?.has_stream ? "\n\n" : ""}
                             </>
                         )}
@@ -383,22 +386,25 @@ export default function Package() {
                             <>
                                 <span style={{ color: "#637777", fontStyle: "italic" }}>{"// Or stream tokens/chunks in real-time"}</span>
                                 {"\n"}
-                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>const</span>
+                                <span style={{ color: "#c792ea", fontStyle: "italic" }}>const</span>
                                 <span style={{ color: "#d6deeb" }}> stream </span>
-                                <span style={{ color: "#fb7185" }}>=</span>
+                                <span style={{ color: "#89ddff" }}>=</span>
                                 <span style={{ color: "#d6deeb" }}> model</span>
-                                <span style={{ color: "#fb7185" }}>.</span>
-                                <span style={{ color: "#f472b6" }}>stream</span>
-                                <span style={{ color: "#fb7185" }}>{"({"}</span>
-                                <span style={{ color: "#637777", fontStyle: "italic" }}>{" /* prompt/input */ "}</span>
-                                <span style={{ color: "#fb7185" }}>{"})"}</span>
-                                <span style={{ color: "#fb7185" }}>;</span>
+                                <span style={{ color: "#89ddff" }}>.</span>
+                                <span style={{ color: "#82aaff" }}>stream</span>
+                                <span style={{ color: "#89ddff" }}>{"({"}</span>
+                                {"\n"}
+                                <span style={{ color: "#d6deeb" }}>{"  "}</span>
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{"// ... prompt/input data"}</span>
+                                {"\n"}
+                                <span style={{ color: "#89ddff" }}>{"})"}</span>
+                                <span style={{ color: "#89ddff" }}>;</span>
                                 {"\n\n"}
-                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>for await</span>
+                                <span style={{ color: "#c792ea", fontStyle: "italic" }}>for await</span>
                                 <span style={{ color: "#d6deeb" }}> (</span>
-                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>const</span>
+                                <span style={{ color: "#c792ea", fontStyle: "italic" }}>const</span>
                                 <span style={{ color: "#d6deeb" }}> chunk </span>
-                                <span style={{ color: "#e879f9", fontStyle: "italic" }}>of</span>
+                                <span style={{ color: "#c792ea", fontStyle: "italic" }}>of</span>
                                 <span style={{ color: "#d6deeb" }}> stream) {"{"}</span>
                                 {"\n"}
                                 <span style={{ color: "#d6deeb" }}>{"    "}process.stdout.write(chunk.token);</span>
