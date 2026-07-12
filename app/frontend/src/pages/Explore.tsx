@@ -21,7 +21,6 @@ export default function Explore() {
     const [error, setError] = useState("");
     
     const { toast, showToast, setOpen } = useToastState();
-    const publishCommand = "mlnexus publish my-model";
 
     const trimmedSearch = useMemo(() => search.trim(), [search]);
 
@@ -154,31 +153,16 @@ export default function Explore() {
                     <p className="text-slate-500 mb-6">
                         {trimmedSearch.length > 0
                             ? "Try another name or clear the search."
-                            : "Be the first! Use the CLI to publish an ONNX model."}
+                            : "Be the first! Use the Manage dashboard to publish an ONNX model."}
                     </p>
-                    <button
-                        type="button"
-                        onClick={async () => {
-                            try {
-                                await navigator.clipboard.writeText(publishCommand);
-                                showToast({
-                                    title: "Copied",
-                                    message: "Publish command copied to clipboard.",
-                                    variant: "success",
-                                });
-                            } catch {
-                                showToast({
-                                    title: "Copy failed",
-                                    message: "Please try again.",
-                                    variant: "error",
-                                });
-                            }
-                        }}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-black border border-white/20 rounded-xl font-mono text-pink-400 hover:border-pink-400/60 transition-colors cursor-pointer"
-                        aria-label="Copy publish command"
-                    >
-                        <span className="text-slate-500">$</span> {publishCommand}
-                    </button>
+                    {trimmedSearch.length === 0 && (
+                        <Link
+                            to="/manage"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-medium rounded-xl transition-colors"
+                        >
+                            Publish First Model
+                        </Link>
+                    )}
                 </div>
             ) : null}
             <CustomToast toast={toast} onOpenChange={setOpen} />
