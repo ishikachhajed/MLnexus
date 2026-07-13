@@ -76,4 +76,4 @@ We take security seriously:
 
 ## 📄 License
 
-MLnexus is an open-source initiative designed to bring native Machine Learning to the JavaScript ecosystem. Licensed under the MIT License.
+MLnexus is an open-source initiative designed to bring native Machine Learning to the JavaScript ecosystem. Licensed under the Apache License 2.0.
