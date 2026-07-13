@@ -1,4 +1,4 @@
-import { Terminal, Download, Code } from "lucide-react";
+import { Terminal, Download, Code, Database } from "lucide-react";
 
 export default function Docs() {
     return (
@@ -109,6 +109,52 @@ export default function Docs() {
 <span className="text-slate-500">{'// Run a prediction'}</span><br />
 <span className="text-blue-400">const</span> result = <span className="text-purple-400">await</span> model.<span className="text-yellow-200">predict</span>({"{ "} image: myImage {" }"});<br />
 <span className="text-blue-400">console</span>.<span className="text-yellow-200">log</span>(result);
+                        </div>
+                    </section>
+                    {/* Section 4 */}
+                    <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
+                        <h2 className="flex items-center gap-3 text-2xl font-bold text-white mb-4">
+                            <Database className="h-6 w-6 text-pink-500" />
+                            4. Environment Variables
+                        </h2>
+                        <p className="mb-6 text-slate-300">
+                            The MLnexus CLI reads one optional environment variable. Most users will never need to set it — the CLI ships pre-configured to point at the official MLnexus registry automatically.
+                        </p>
+                        
+                        <div className="mt-4">
+                            <code className="text-lg font-bold text-pink-400 block mb-2">MLNEXUS_REGISTRY</code>
+                            <p className="text-sm text-slate-300 mb-3">
+                                Overrides the registry URL that the CLI connects to. By default, all CLI commands target the official MLnexus global registry. You only need to set this variable if you are:
+                            </p>
+                            <ul className="list-disc pl-5 text-sm text-slate-300 space-y-1 mb-4">
+                                <li>Running your own private self-hosted MLnexus instance inside a corporate network.</li>
+                                <li>A contributor working on MLnexus itself locally and pointing the CLI at a local dev server.</li>
+                            </ul>
+                            
+                            <p className="text-sm text-slate-400 mb-4">
+                                Because the CLI is a global system tool and not a web application, this variable is set in your operating system shell — not in a <code className="text-pink-400">.env</code> file. No dotenv library is required.
+                            </p>
+
+                            <div className="bg-black/50 border border-white/10 rounded-xl p-4 mt-4">
+                                <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-semibold">Mac / Linux — add to ~/.bashrc or ~/.zshrc</p>
+                                <pre className="text-sm text-pink-300"><code>export MLNEXUS_REGISTRY="https://your-private-registry.com"</code></pre>
+                            </div>
+
+                            <div className="bg-black/50 border border-white/10 rounded-xl p-4 mt-3">
+                                <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-semibold">Windows — PowerShell (current session)</p>
+                                <pre className="text-sm text-pink-300"><code>$env:MLNEXUS_REGISTRY = "https://your-private-registry.com"</code></pre>
+                            </div>
+
+                            <div className="bg-black/50 border border-white/10 rounded-xl p-4 mt-3">
+                                <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-semibold">Windows — set permanently via System Properties</p>
+                                <pre className="text-sm text-slate-400 whitespace-pre-wrap"><code>Start → "Edit the system environment variables" → Environment Variables → New
+Variable name:  MLNEXUS_REGISTRY
+Variable value: https://your-private-registry.com</code></pre>
+                            </div>
+
+                            <p className="text-sm text-slate-500 mt-4">
+                                Once set, every subsequent CLI command — <code className="text-pink-400">mlnexus install</code>, <code className="text-pink-400">mlnexus restore</code>, <code className="text-pink-400">mlnexus list</code> — will point at your custom registry. No other configuration is required.
+                            </p>
                         </div>
                     </section>
                 </div>
