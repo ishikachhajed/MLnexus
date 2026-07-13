@@ -1,8 +1,11 @@
 {
   "name": "@mlnexus/cli",
-  "version": "1.0.1",
+  "version": "1.0.7",
   "description": "",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",

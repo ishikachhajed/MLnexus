@@ -1,0 +1,21 @@
+{
+  "name": "mlnexus-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "mlnexus restore"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "mlnexus": {
+    "breast-cancer-detection": "1.0.0"
+  },
+  "dependencies": {
+    "@mlnexus/runtime": "^1.0.5",
+    "onnxruntime-node": "^1.24.3"
+  }
+}

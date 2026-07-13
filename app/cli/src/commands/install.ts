@@ -64,6 +64,15 @@ export default {
 `;
         }
 
+        const pkgSpinner = ora("Updating package.json...").start();
+        addMlnexusEntry(packageName, manifest.version);
+        ensurePostinstall();
+        pkgSpinner.succeed("Updated package.json");
+
+        // 1. Install runtime dependencies FIRST so npm doesn't prune our model folder later
+        await ensureRuntimeDeps();
+
+        // 2. Scaffold the package into node_modules AFTER npm install has finished
         const scaffoldSpinner = ora(
             `Scaffolding node_modules/${packageName}/`,
         ).start();
@@ -72,12 +81,7 @@ export default {
             `Scaffolded node_modules/${packageName}/`,
         );
 
-        const pkgSpinner = ora("Updating package.json...").start();
-        addMlnexusEntry(packageName, manifest.version);
-        ensurePostinstall();
-        pkgSpinner.succeed("Updated package.json");
-
-        await ensureRuntimeDeps();
+        log.br();
 
         log.br();
         log.success(
