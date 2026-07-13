@@ -158,6 +158,171 @@ Variable value: https://your-private-registry.com</code></pre>
                         </div>
                     </section>
                 </div>
+
+                <div className="mt-16 space-y-12">
+                    {/* Section 5 */}
+                    <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
+                        <h2 className="text-2xl font-bold text-white mb-4">5. TypeScript Interface Reference</h2>
+                        <p className="mb-4 text-sm text-slate-400">
+                            For authors writing wrappers in TypeScript, or developers consuming models with TypeScript, the following interfaces define the exact shape expected by the MLnexus Runtime engine.
+                        </p>
+                        <pre className="bg-black/80 border border-white/10 p-4 rounded-xl text-sm overflow-x-auto text-cyan-300 font-mono">
+{`// The full structure of a wrapper.config.js when typed
+interface WrapperConfig {
+    // Human-readable list of keys the developer must supply
+    inputs: string[];
+    
+    // Human-readable list of keys present in the returned result
+    outputs: string[];
+    
+    // Optional: single-shot prediction. One call -> one result object.
+    predict?: (
+        sessions: Record<string, OnnxSession>,
+        input: Record<string, unknown>
+    ) => Promise<Record<string, unknown>>;
+    
+    // Optional: streaming generation. One call -> async iterable of chunks.
+    stream?: (
+        sessions: Record<string, OnnxSession>,
+        input: Record<string, unknown>
+    ) => AsyncGenerator<Record<string, unknown>, void, unknown>;
+}
+
+// The shape every tensor must conform to inside engine.run({})
+interface TensorConfig {
+    data: number[] | bigint[] | string[] | boolean[];
+    shape: number[];     // e.g. [1, 3] for 1 batch of 3 features
+    type: "float32" | "int32" | "int64" | "bool" | "string";
+}`}
+                        </pre>
+                    </section>
+
+                    {/* Section 6 */}
+                    <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
+                        <h2 className="text-2xl font-bold text-white mb-4">6. Supported Tensor Types</h2>
+                        <p className="mb-4 text-sm text-slate-400">
+                            Every tensor you pass into <code className="text-pink-400">engine.run()</code> must have a <code className="text-pink-400">type</code> field matching one of these exact string values:
+                        </p>
+                        
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr className="border-b border-slate-700">
+                                        <th className="text-left py-2 pr-6 text-slate-400 font-semibold">Type Value</th>
+                                        <th className="text-left py-2 pr-6 text-slate-400 font-semibold">JS Data Array</th>
+                                        <th className="text-left py-2 text-slate-400 font-semibold">Use Case</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-slate-300">
+                                    <tr className="border-b border-slate-800">
+                                        <td className="py-2 pr-6"><code className="text-indigo-400">"float32"</code></td>
+                                        <td className="py-2 pr-6"><code>number[]</code></td>
+                                        <td className="py-2">Most regression and classification models. Default choice for continuous numeric data.</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-800">
+                                        <td className="py-2 pr-6"><code className="text-indigo-400">"int32"</code></td>
+                                        <td className="py-2 pr-6"><code>number[]</code></td>
+                                        <td className="py-2">Token IDs for NLP models. Class indices. Integer sequences.</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-800">
+                                        <td className="py-2 pr-6"><code className="text-indigo-400">"int64"</code></td>
+                                        <td className="py-2 pr-6"><code>bigint[]</code></td>
+                                        <td className="py-2">Large integer IDs, timestamps. Required by some HuggingFace transformer models.</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-800">
+                                        <td className="py-2 pr-6"><code className="text-indigo-400">"bool"</code></td>
+                                        <td className="py-2 pr-6"><code>boolean[]</code></td>
+                                        <td className="py-2">Attention masks and binary flags.</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 pr-6"><code className="text-indigo-400">"string"</code></td>
+                                        <td className="py-2 pr-6"><code>string[]</code></td>
+                                        <td className="py-2">Text input for native string-processing ONNX models.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="bg-pink-950/20 border border-pink-900/50 rounded-xl p-6 mt-8">
+                            <h3 className="text-lg font-bold text-pink-500 mb-2">Architectural Best Practices</h3>
+                            <p className="text-sm text-slate-300">
+                                Machine learning dynamically processes extreme execution boundaries perfectly. Always structurally embrace explicit <code className="text-pink-400">try / catch</code> block encapsulation around predictions securely! 
+                                If the wrapper author declared <code className="text-pink-400">inputs: ["age"]</code> and your code passes a string instead of a number, the ONNX runtime will throw a typed error — you want to catch and handle that gracefully rather than letting it crash your server.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Section 7 */}
+                    <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
+                        <h2 className="text-2xl font-bold text-white mb-4">7. End-to-End Examples</h2>
+                        <p className="mb-6 text-slate-400">Complete, real-world usage patterns across common ML model categories.</p>
+
+                        <h3 className="text-lg font-semibold text-white mb-3">Tabular Regression (Express.js)</h3>
+                        <pre className="bg-black/80 border border-white/10 p-4 rounded-xl text-sm overflow-x-auto text-pink-300 font-mono">
+{`import express from "express";
+import housePriceModel from "house-price-predictor";
+
+const app = express();
+app.use(express.json());
+
+app.post("/predict-price", async (req, res) => {
+    try {
+        await housePriceModel.init();
+        const result = await housePriceModel.predict({
+            bedrooms: req.body.bedrooms,
+            sqft: req.body.sqft,
+            location_score: req.body.location_score
+        });
+        res.json({ price_usd: result.price });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.listen(3000);`}
+                        </pre>
+
+                        <h3 className="text-lg font-semibold text-white mt-8 mb-3">Text Classification (Next.js API Route)</h3>
+                        <pre className="bg-black/80 border border-white/10 p-4 rounded-xl text-sm overflow-x-auto text-indigo-300 font-mono">
+{`// app/api/sentiment/route.ts
+import sentimentModel from "sentiment-classifier";
+
+export async function POST(req: Request) {
+    const { text } = await req.json();
+
+    await sentimentModel.init();
+    const result = await sentimentModel.predict({ text });
+
+    return Response.json({
+        label: result.label,          // e.g. "positive"
+        confidence: result.confidence  // e.g. 0.94
+    });
+}`}
+                        </pre>
+
+                        <h3 className="text-lg font-semibold text-white mt-8 mb-3">LLM Text Generation with Streaming (Node.js)</h3>
+                        <pre className="bg-black/80 border border-white/10 p-4 rounded-xl text-sm overflow-x-auto text-pink-300 font-mono">
+{`import textGenerator from "local-llm";
+
+async function generate(prompt: string) {
+    await textGenerator.init();
+
+    // model.stream() returns an AsyncGenerator
+    const tokens = textGenerator.stream({ prompt });
+
+    let fullResponse = "";
+    for await (const chunk of tokens) {
+        process.stdout.write(chunk.token); // stream to terminal in real-time
+        fullResponse += chunk.token;
+    }
+
+    return fullResponse;
+}
+
+generate("Explain machine learning in one paragraph:");`}
+                        </pre>
+                    </section>
+                </div>
             </div>
         </div>
     );
