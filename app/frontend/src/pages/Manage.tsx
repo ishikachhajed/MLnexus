@@ -207,6 +207,8 @@ export default function Manage() {
     const [version, setVersion] = useState("");
     const [description, setDescription] = useState("");
     const [documentation, setDocumentation] = useState("");
+    const [metadataStr, setMetadataStr] = useState("");
+    const [parsedMetadata, setParsedMetadata] = useState<Record<string, any>>({});
     const [showPreview, setShowPreview] = useState(false);
     const [accepted, setAccepted] = useState<File[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -605,6 +607,27 @@ export default function Manage() {
             return;
         }
 
+        if (metadataStr.trim()) {
+            try {
+                const parsed = JSON.parse(metadataStr);
+                if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+                    throw new Error("Metadata must be a JSON object");
+                }
+                setParsedMetadata(parsed);
+            } catch (err: any) {
+                showToast({
+                    title: "Invalid JSON",
+                    message: err.message.includes("Unexpected token") 
+                        ? "The metadata is not valid JSON." 
+                        : err.message,
+                    variant: "error",
+                });
+                return;
+            }
+        } else {
+            setParsedMetadata({});
+        }
+
         setShowReview(true);
     };
 
@@ -677,6 +700,7 @@ export default function Manage() {
                 method: "POST",
                 body: JSON.stringify({
                     version: version.trim(),
+                    metadata: parsedMetadata,
                     files: fileList,
                 }),
             })) as { files?: { name: string; upload_url: string }[] };
@@ -791,6 +815,7 @@ export default function Manage() {
                 description={description.trim()}
                 isNewPackage={isNewPackage}
                 files={displayFiles}
+                metadata={parsedMetadata}
                 isSubmitting={isSubmitting}
                 isUploading={isUploading}
                 uploadProgress={uploadProgress}
@@ -902,7 +927,6 @@ export default function Manage() {
                                     }
                                     placeholder="One-line summary for Explore"
                                     className="w-full rounded-xl border border-white/10 bg-black/80 px-4 py-3 text-white placeholder:text-white/30 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                    required={isNewPackage}
                                 />
                             </div>
                         </div>
@@ -1011,6 +1035,23 @@ export default function Manage() {
                                 className="min-h-60 w-full flex-1 resize-none rounded-xl border border-white/10 bg-black/80 px-4 py-3 text-white placeholder:text-white/30 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
                                 required={isNewPackage}
                             />
+                        </div>
+                        <div className="mt-6">
+                            <label className="block text-sm font-medium text-white/70 mb-2">
+                                Version Metadata (JSON - Optional)
+                            </label>
+                            <textarea
+                                value={metadataStr}
+                                onChange={(event) =>
+                                    setMetadataStr(event.target.value)
+                                }
+                                placeholder='{ "gpu_required": true, "author": "Ishika" }'
+                                rows={3}
+                                className="w-full rounded-xl border border-white/10 bg-black/80 px-4 py-3 font-mono text-sm text-pink-300 placeholder:text-white/30 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
+                            />
+                            <p className="mt-2 text-xs text-white/50">
+                                Extra technical details like GPU requirements or citations.
+                            </p>
                         </div>
                     </div>
 
