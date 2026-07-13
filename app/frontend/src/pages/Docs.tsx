@@ -13,6 +13,24 @@ export default function Docs() {
                     </p>
                 </div>
 
+                <div className="mb-12">
+                    <h2 className="text-2xl font-bold text-white mt-8 mb-4">Why does MLnexus exist?</h2>
+                    <p className="text-slate-300 mb-6">
+                        Historically, integrating an Artificial Intelligence model into a Node.js backend was an incredibly complex engineering feat.
+                        Data Scientists and Web Developers operate in entirely different architectural ecosystems.
+                    </p>
+                    
+                    <div className="bg-emerald-950/20 border border-emerald-900/40 rounded-xl p-5">
+                        <h3 className="text-emerald-400 font-bold mb-2">The Modern Era (With MLnexus)</h3>
+                        <ul className="list-disc pl-5 space-y-2 text-sm text-slate-300">
+                            <li>Models natively execute directly inside your existing backend architecture.</li>
+                            <li>Absolutely zero python code is required in your application logic.</li>
+                            <li>You install and manage models seamlessly the exact same way you manage normal NPM backend libraries.</li>
+                            <li>Zero active server hosting costs for idle inference.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div className="space-y-12">
                     {/* Section 1 */}
                     <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
@@ -98,6 +116,18 @@ export default function Docs() {
                         <p className="mb-4">
                             Once installed via the CLI, you can easily load and run any model using our universal engine!
                         </p>
+                        
+                        <ol className="list-decimal pl-6 space-y-4 text-slate-300 mb-6">
+                            <li>
+                                <strong>Platform Setup:</strong> You begin by opening a standard Node.js application (Express, NestJS, Next.js API Routes, traditional server, etc.).
+                            </li>
+                            <li>
+                                <strong>Install Dependencies:</strong> Run <code className="text-pink-400">npm install -g @mlnexus/cli</code>.
+                            </li>
+                            <li>
+                                <strong>Execution:</strong> You import the package directly inside your Typescript file, initialize it safely into active execution memory, and immediately begin securely predicting outputs based on structured javascript Object data!
+                            </li>
+                        </ol>
                         <div className="rounded-lg bg-black p-4 font-mono text-sm text-slate-300 border border-white/10 overflow-x-auto whitespace-pre">
 <span className="text-purple-400">import</span> {"{ createModel }"} <span className="text-purple-400">from</span> <span className="text-green-300">"@mlnexus/runtime"</span>;<br />
 <span className="text-purple-400">import</span> config <span className="text-purple-400">from</span> <span className="text-green-300">"my-awesome-model/wrapper.config.js"</span>;<br />
@@ -109,6 +139,42 @@ export default function Docs() {
 <span className="text-slate-500">{'// Run a prediction'}</span><br />
 <span className="text-blue-400">const</span> result = <span className="text-purple-400">await</span> model.<span className="text-yellow-200">predict</span>({"{ "} image: myImage {" }"});<br />
 <span className="text-blue-400">console</span>.<span className="text-yellow-200">log</span>(result);
+                        </div>
+
+                        <div className="bg-indigo-950/30 border border-indigo-900/50 rounded-xl p-6 mt-10">
+                            <h3 className="text-xl font-bold text-indigo-400 mb-2">⚠️ Backend-Only Architecture</h3>
+                            <p className="text-slate-300">
+                                MLnexus is architected exclusively for <strong>Node.js Backend Environments</strong>. Because the runtime requires direct filesystem access for model caching and relies on native binary bindings (ONNX Runtime Node), <strong>it cannot be used directly in a browser environment (Frontend)</strong>.
+                            </p>
+                            <p className="text-slate-400 text-sm mt-2 font-mono">
+                                Proper usage pattern: Client App → Fetch Request → Node.js Backend (MLnexus) → Result → Client App.
+                            </p>
+                        </div>
+
+                        <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 mt-10">
+                            <h3 className="text-xl font-bold text-white mb-4">Deployment & Production Strategy</h3>
+                            <p className="mb-4 text-slate-300">
+                                MLnexus is safe for production deployment across all major cloud providers and containerized environments. 
+                                However, because it uses native binaries, you should follow these backend-specific requirements:
+                            </p>
+                            <div className="space-y-4">
+                                <div className="bg-black/40 p-4 rounded-lg border border-slate-800">
+                                    <strong className="text-indigo-400 block mb-1">Native Dependencies</strong>
+                                    <p className="text-xs text-slate-400">
+                                        The <code>onnxruntime-node</code> dependency requires native build tools during installation on Linux 
+                                        (e.g., <code>build-essential</code> and <code>python3</code>). Standard Node.js Docker images usually 
+                                        include these or provide compatible binaries.
+                                    </p>
+                                </div>
+                                <div className="bg-black/40 p-4 rounded-lg border border-slate-800">
+                                    <strong className="text-emerald-400 block mb-1">Filesystem Permissions</strong>
+                                    <p className="text-xs text-slate-400">
+                                        MLnexus caches models in the user's home directory (<code>~/.mlnexus/cache</code>). Your execution 
+                                        environment (Docker user, Service account) must have write permissions to this path to download models 
+                                        on the first run or during <code>postinstall</code>.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </section>
                     {/* Section 4 */}
@@ -164,7 +230,7 @@ Variable value: https://your-private-registry.com</code></pre>
                     <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
                         <h2 className="text-2xl font-bold text-white mb-4">5. TypeScript Interface Reference</h2>
                         <p className="mb-3 text-sm text-slate-300">
-                            <strong>The Execution Wrapper (.ts, .js, .mjs):</strong> Models are essentially enormous, blind mathematical calculators. A web developer has absolutely no idea what structure of tensor you require. This critical file specifically teaches the local MLnexus ecosystem precisely how to translate normal web developer input gracefully into your required structure safely.
+                            <strong>The Execution Wrapper (.ts, .js, .mjs):</strong> Models are essentially enormous, blind mathematical calculators. A backend developer has absolutely no idea what structure of tensor you require. This critical file specifically teaches the local MLnexus ecosystem precisely how to translate normal backend developer input gracefully into your required structure safely.
                         </p>
                         <p className="mb-6 text-sm text-slate-300">
                             This file is uploaded alongside your <code className="text-pink-400">.onnx</code> file at publish time. You can author your wrapper in <strong>TypeScript (.ts)</strong> for full type-safety, or standard <strong>JavaScript (.js/.mjs)</strong>. When you upload a <code className="text-pink-400">.ts</code> file via the dashboard, it is automatically compiled to clean JavaScript before being stored. When a developer runs <code className="text-pink-400">mlnexus install</code>, this wrapper is downloaded and injected directly into their project as the executable interface for your model, always named <code className="text-pink-400">wrapper.config.js</code>.
@@ -174,7 +240,7 @@ Variable value: https://your-private-registry.com</code></pre>
                             <h3 className="text-red-500 font-bold mb-2">Important for Scikit-Learn Users</h3>
                             <p className="text-sm text-slate-300 mb-4">
                                 If you are using <code className="text-pink-400">skl2onnx</code> to export your model, you **MUST** disable ZipMap.
-                                By default, scikit-learn ONNX exporters try to output a "Map" type for probabilities, which is not supported by the MLnexus Runtime (Node.js/Web).
+                                By default, scikit-learn ONNX exporters try to output a "Map" type for probabilities, which is not supported by the MLnexus Runtime (Node.js).
                             </p>
                             <p className="text-xs text-slate-400 mb-2 font-mono">❌ Error if ignored: "Non tensor type is temporarily not supported"</p>
                             <div className="bg-black/40 p-4 rounded-lg">
@@ -287,6 +353,12 @@ interface TensorConfig {
                     <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
                         <h2 className="text-2xl font-bold text-white mb-4">7. End-to-End Examples</h2>
                         <p className="mb-6 text-slate-400">Complete, real-world usage patterns across common ML model categories.</p>
+                        
+                        <h3 className="text-xl font-extrabold text-white mb-2">The Standard Runtime Engine</h3>
+                        <p className="mb-6 text-slate-300">
+                            The global CLI fetches the massive bytes locally, however, the <strong>Standard Runtime Engine</strong> (<code className="text-pink-400">@mlnexus/runtime</code>) is strictly the library that mathematical executes and orchestrates them perfectly inside your structural backend applications dynamically.
+                            It completely isolates the highly-complex internal execution pipelines natively and securely exposes an elegant structural standard to your Javascript ecosystem seamlessly.
+                        </p>
 
                         <h3 className="text-lg font-semibold text-white mb-3">Tabular Regression (Express.js)</h3>
                         <pre className="bg-black/80 border border-white/10 p-4 rounded-xl text-sm overflow-x-auto text-pink-300 font-mono">
