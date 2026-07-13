@@ -27,6 +27,7 @@ Historically, executing AI models meant setting up dedicated Python API servers 
 - **Automatic Scaffolding**: Installing a model dynamically scaffolds an isolated execution environment inside `node_modules/@mlnexus`.
 - **Sucrase Compilation**: Wrapper code is safely compiled on the client side using Sucrase before it even reaches the database, guaranteeing safe Javascript execution.
 - **Dynamic Syntax Generation**: Automatically detects if a model supports `predict()` or `stream()` and customizes documentation snippets on the fly.
+- **Version Metadata**: Supports arbitrary JSON metadata (e.g., GPU requirements, citations) attached to each model version, visible during the final review and stored for downstream discovery.
 
 ### 🛡️ Enterprise-Grade Infrastructure
 - **Cloudflare R2 Storage**: All model binaries are hosted on Cloudflare's edge network, delivered securely via 60-minute expiring Presigned URLs.
