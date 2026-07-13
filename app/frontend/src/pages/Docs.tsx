@@ -169,6 +169,31 @@ Variable value: https://your-private-registry.com</code></pre>
                         <p className="mb-6 text-sm text-slate-300">
                             This file is uploaded alongside your <code className="text-pink-400">.onnx</code> file at publish time. You can author your wrapper in <strong>TypeScript (.ts)</strong> for full type-safety, or standard <strong>JavaScript (.js/.mjs)</strong>. When you upload a <code className="text-pink-400">.ts</code> file via the dashboard, it is automatically compiled to clean JavaScript before being stored. When a developer runs <code className="text-pink-400">mlnexus install</code>, this wrapper is downloaded and injected directly into their project as the executable interface for your model, always named <code className="text-pink-400">wrapper.config.js</code>.
                         </p>
+                        
+                        <div className="bg-red-950/20 border border-red-900/50 rounded-xl p-5 mb-8">
+                            <h3 className="text-red-500 font-bold mb-2">Important for Scikit-Learn Users</h3>
+                            <p className="text-sm text-slate-300 mb-4">
+                                If you are using <code className="text-pink-400">skl2onnx</code> to export your model, you **MUST** disable ZipMap.
+                                By default, scikit-learn ONNX exporters try to output a "Map" type for probabilities, which is not supported by the MLnexus Runtime (Node.js/Web).
+                            </p>
+                            <p className="text-xs text-slate-400 mb-2 font-mono">❌ Error if ignored: "Non tensor type is temporarily not supported"</p>
+                            <div className="bg-black/40 p-4 rounded-lg">
+                                <p className="text-xs text-white font-bold mb-2">Correct Export Setting in Python:</p>
+                                <pre className="text-xs text-emerald-400 overflow-x-auto">
+{`from skl2onnx import convert_sklearn
+
+# THE CRITICAL FIX: Add options={'zipmap': False}
+onx = convert_sklearn(
+    model,
+    initial_types=initial_types,
+    options={'zipmap': False} # <--- Exact setting needed
+)
+
+with open("model.onnx", "wb") as f:
+    f.write(onx.SerializeToString())`}
+                                </pre>
+                            </div>
+                        </div>
                         <p className="mb-4 text-sm text-slate-400">
                             For authors writing wrappers in TypeScript, or developers consuming models with TypeScript, the following interfaces define the exact shape expected by the MLnexus Runtime engine.
                         </p>
