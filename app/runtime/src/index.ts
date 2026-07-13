@@ -68,27 +68,27 @@ export function createModel(config: ModelConfig): ModelInstance {
             ready = true;
             console.log(`[MLnexus] ✓ ${config.name}@${config.version} ready`);
         },
+        ...(config.predict && {
+            async predict(
+                input: Record<string, unknown>,
+            ): Promise<Record<string, unknown>> {
+                if (!ready) {
+                    throw new Error(`[MLnexus] ${config.name}: Model not initialized. Call await model.init() first.`);
+                }
+                
+                return await config.predict!(sessions, input);
+            }
+        }),
 
-        async predict(
-            input: Record<string, unknown>,
-        ): Promise<Record<string, unknown>> {
-            if (!ready) {
-                throw new Error(`[MLnexus] ${config.name}: Model not initialized. Call await model.init() first.`);
+        ...(config.stream && {
+            async *stream(input: Record<string, unknown>): AsyncGenerator<Record<string, unknown>, void, unknown> {
+                if (!ready) {
+                    throw new Error(`[MLnexus] ${config.name}: Model not initialized. Call await model.init() first.`);
+                }
+                
+                yield *config.stream!(sessions, input);
             }
-            
-            return await config.predict(sessions, input);
-        },
-
-        async *stream(input: Record<string, unknown>): AsyncGenerator<Record<string, unknown>, void, unknown> {
-            if (!ready) {
-                throw new Error(`[MLnexus] ${config.name}: Model not initialized. Call await model.init() first.`);
-            }
-            if (!config.stream) {
-                throw new Error(`[MLnexus] ${config.name}: This model wrapper does not support streaming.`);
-            }
-            
-            yield *config.stream(sessions, input);
-        },
+        }),
 
         isReady(): boolean {
             return ready;
