@@ -57,6 +57,35 @@ export default function Docs() {
                                     <span className="text-pink-500">mlnexus</span> cache clean
                                 </div>
                             </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-2">Restoring Models (CI/CD)</h3>
+                                <p className="mb-4 text-sm text-slate-300">
+                                    The command that re-downloads all your MLnexus models on a fresh machine or inside a CI/CD deployment environment.
+                                </p>
+                                <div className="rounded-lg bg-black p-4 font-mono text-sm text-slate-300 border border-white/10 mb-4">
+                                    <span className="text-pink-500">mlnexus</span> restore
+                                </div>
+                                <p className="mb-4 text-sm text-slate-300">
+                                    When you deploy your application to Vercel, AWS Amplify, Render, Railway, or any cloud platform, those environments clone your git repository and run <code className="text-pink-400">npm install</code> — but your <code className="text-pink-400">.onnx</code> model files are not in git (they are too large and live in <code className="text-pink-400">~/.mlnexus/cache</code> on your machine).
+                                </p>
+                                <p className="mb-4 text-sm text-slate-300">
+                                    <code className="text-pink-400">mlnexus restore</code> reads the <code className="text-pink-400">"mlnexus"</code> section of your <code className="text-pink-400">package.json</code>, identifies every model your project depends on, and downloads them fresh into the deployment environment before your build starts.
+                                </p>
+                                <div className="rounded-xl border border-pink-500/30 bg-pink-500/10 p-4 mt-4 text-sm">
+                                    <strong className="text-pink-400 block mb-2">This is set up automatically — you do not need to do anything.</strong>
+                                    <p className="text-slate-300 mb-3">
+                                        Every time you run <code className="text-pink-400">mlnexus install &lt;package&gt;</code>, the CLI automatically injects the following into your <code className="text-pink-400">package.json</code> scripts without any manual steps:
+                                    </p>
+                                    <pre className="bg-black/40 p-3 rounded text-xs text-pink-300 font-mono">
+{`"scripts": {
+  "postinstall": "mlnexus restore"
+}`}
+                                    </pre>
+                                    <p className="text-slate-400 mt-3 text-xs">
+                                        If a <code className="text-pink-400">postinstall</code> script already exists in your project, MLnexus appends itself safely with <code className="text-pink-400">&&</code> rather than overwriting your existing script. Your existing hooks are never removed.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
