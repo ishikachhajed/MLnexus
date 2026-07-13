@@ -366,10 +366,7 @@ export default function Package() {
                                 <span style={{ color: "#89ddff" }}>.</span>
                                 <span style={{ color: "#82aaff" }}>predict</span>
                                 <span style={{ color: "#89ddff" }}>{"({"}</span>
-                                {"\n"}
-                                <span style={{ color: "#d6deeb" }}>{"  "}</span>
-                                <span style={{ color: "#637777", fontStyle: "italic" }}>{"// ... your input data"}</span>
-                                {"\n"}
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{" /* input data */ "}</span>
                                 <span style={{ color: "#89ddff" }}>{"})"}</span>
                                 <span style={{ color: "#89ddff" }}>;</span>
                                 {"\n"}
@@ -393,10 +390,7 @@ export default function Package() {
                                 <span style={{ color: "#89ddff" }}>.</span>
                                 <span style={{ color: "#82aaff" }}>stream</span>
                                 <span style={{ color: "#89ddff" }}>{"({"}</span>
-                                {"\n"}
-                                <span style={{ color: "#d6deeb" }}>{"  "}</span>
-                                <span style={{ color: "#637777", fontStyle: "italic" }}>{"// ... prompt/input data"}</span>
-                                {"\n"}
+                                <span style={{ color: "#637777", fontStyle: "italic" }}>{" /* prompt/input */ "}</span>
                                 <span style={{ color: "#89ddff" }}>{"})"}</span>
                                 <span style={{ color: "#89ddff" }}>;</span>
                                 {"\n\n"}
