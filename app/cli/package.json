@@ -13,11 +13,12 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsup src/index.ts --format esm --banner.js '#!/usr/bin/env node'",
+    "build": "tsup src/index.ts --format esm",
     "start": "node dist/index.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
+    "commander": "^14.0.3",
     "ora": "^9.4.1"
   },
   "devDependencies": {
