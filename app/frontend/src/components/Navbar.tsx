@@ -71,6 +71,12 @@ function Navbar({
                         >
                             Explore
                         </Link>
+                        <Link
+                            to="/docs"
+                            className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                        >
+                            Docs
+                        </Link>
                         {isAuthenticated ? (
                             <>
                                 <div
@@ -183,6 +189,13 @@ function Navbar({
                                 onClick={() => setMenuOpen(false)}
                             >
                                 Explore
+                            </Link>
+                            <Link
+                                to="/docs"
+                                className="text-sm font-medium text-slate-300"
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Docs
                             </Link>
                             {isAuthenticated ? (
                                 <>
