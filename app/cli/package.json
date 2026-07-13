@@ -1,7 +1,6 @@
 {
   "name": "@mlnexus/cli",
   "version": "1.0.0",
-  "private": true,
   "description": "",
   "main": "dist/index.js",
   "keywords": [],
@@ -20,6 +19,9 @@
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "ora": "^9.4.1"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
