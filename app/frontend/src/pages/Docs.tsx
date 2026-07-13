@@ -163,6 +163,12 @@ Variable value: https://your-private-registry.com</code></pre>
                     {/* Section 5 */}
                     <section className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm shadow-[0_0_40px_rgba(236,72,153,0.05)] hover:bg-white/10 transition-colors">
                         <h2 className="text-2xl font-bold text-white mb-4">5. TypeScript Interface Reference</h2>
+                        <p className="mb-3 text-sm text-slate-300">
+                            <strong>The Execution Wrapper (.ts, .js, .mjs):</strong> Models are essentially enormous, blind mathematical calculators. A web developer has absolutely no idea what structure of tensor you require. This critical file specifically teaches the local MLnexus ecosystem precisely how to translate normal web developer input gracefully into your required structure safely.
+                        </p>
+                        <p className="mb-6 text-sm text-slate-300">
+                            This file is uploaded alongside your <code className="text-pink-400">.onnx</code> file at publish time. You can author your wrapper in <strong>TypeScript (.ts)</strong> for full type-safety, or standard <strong>JavaScript (.js/.mjs)</strong>. When you upload a <code className="text-pink-400">.ts</code> file via the dashboard, it is automatically compiled to clean JavaScript before being stored. When a developer runs <code className="text-pink-400">mlnexus install</code>, this wrapper is downloaded and injected directly into their project as the executable interface for your model, always named <code className="text-pink-400">wrapper.config.js</code>.
+                        </p>
                         <p className="mb-4 text-sm text-slate-400">
                             For authors writing wrappers in TypeScript, or developers consuming models with TypeScript, the following interfaces define the exact shape expected by the MLnexus Runtime engine.
                         </p>
