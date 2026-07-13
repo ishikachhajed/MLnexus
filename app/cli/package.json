@@ -17,7 +17,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "ora": "^9.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
