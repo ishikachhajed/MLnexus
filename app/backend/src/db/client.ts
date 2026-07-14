@@ -7,7 +7,7 @@ export const pool = new Pool({
     connectionString: env.DATABASE_URL,
     max: 20,                      
     idleTimeoutMillis: 30_000,    
-    connectionTimeoutMillis: 5_000, 
+    connectionTimeoutMillis: 15_000, // Increased to 15s to allow Neon Serverless to wake up from sleep
 });
 
 pool.on("error", (err) => {
